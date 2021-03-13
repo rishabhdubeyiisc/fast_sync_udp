@@ -13,56 +13,109 @@ from utils import get_my_ipv4
 from utils import time_sync
 from utils import check_sudo
 #classes
-
-class base_comm(object):
-    def __init__(   self ,                     
-                    ntp_sync_wait       : float = 1.0           ,
-                    sync_lock_precision : float = (10**(-5))    ,
-                    ntp_server_sync     : bool  = True          ,
-                    to_log              : bool  = True          ,
-                    sync_logging_level  : str   = 'DEBUG'       ,
-                    trans_logging_level : str   = 'DEBUG'
+class base(object):
+    def __init__(   self
                 ):
-        self.logger_dict = { 'CRITICAL' : 50 , 'ERROR' : 40 , 'WARNING' : 30 , 'INFO' : 20 , 'DEBUG' : 10}
-
-        self.logger_formatter = logging.Formatter('%(asctime)s : %(module)s : %(threadName)s : %(levelname)s : %(funcName)s : %(message)s')
-
-        self.ip_name_dict = { '10.64.37.31' : 'pmu_31' , '10.64.37.32' : 'pmu_32' , '10.64.37.33' : 'pmu_33' , '10.64.37.34' : 'pmu_34' , '10.64.37.35' : 'pdc_35'}
-        
-        ##
-        #check sudo
+        '''
+        do sudo check , resolve ip , gives name , logger_formatter
+        '''
         check_sudo()
-        #get own ip
-        self.pmu_ip     = get_my_ipv4()
-        self.pmu_name   = self.ip_name_dict[self.pmu_ip]
-        self.log_file_name = str(self.pmu_name) + "_trans.log"
-        self.log_sync_file_name = str(self.pmu_name) + "_sync.log"
-        self.syncer_name = str(self.pmu_name) + "_syncer"
-        #creating a logger for server
-        self.logger_transaction = logging.getLogger(self.pmu_name)
-        self.logger_transaction.setLevel(self.logger_dict[trans_logging_level])
 
-        self.logger_transaction_file_handler = logging.FileHandler(self.log_file_name,mode='w')
-        self.logger_transaction_file_handler.setFormatter(self.logger_formatter)
+        self._logger_dict = { 'CRITICAL' : 50 , 'ERROR' : 40 , 'WARNING' : 30 , 'INFO' : 20 , 'DEBUG' : 10}
 
-        self.logger_transaction.addHandler(self.logger_transaction_file_handler)
-        #creating a logger for time sync
-        self.logger_sync = logging.getLogger(self.syncer_name)
-        self.logger_sync.setLevel(self.logger_dict[sync_logging_level])
+        self._logger_formatter = logging.Formatter('%(asctime)s : %(module)s : %(threadName)s : %(levelname)s : %(funcName)s : %(message)s')
 
-        self.logger_sync_file_handler = logging.FileHandler(self.log_sync_file_name,mode='w')
-        self.logger_sync_file_handler.setFormatter(self.logger_formatter)
+        self._ip_name_dict = { '10.64.37.31' : 'pmu_31' , '10.64.37.32' : 'pmu_32' , '10.64.37.33' : 'pmu_33' , '10.64.37.34' : 'pmu_34' , '10.64.37.35' : 'pdc_35'}
+        #get own ip and name resolve
+        self._pmu_ip     = get_my_ipv4()
+        self._pmu_name   = self._ip_name_dict[self._pmu_ip]
+        self._log_file_name = str(self._pmu_name) + "_trans.log"
+        self._log_sync_file_name = str(self._pmu_name) + "_sync.log"
+        self._syncer_name = str(self._pmu_name) + "_syncer"
+    
+    def get_name_from_ip(self):
+        return self._pmu_name
+    
+    def get_trans_logger_name(self):
+        return self._pmu_name
 
-        self.logger_sync.addHandler(self.logger_sync_file_handler)
+    def get_trans_file_name(self):
+        return self._log_file_name
+
+    def get_sync_logger_name(self):
+        return self._syncer_name
+
+    def get_sync_file_name(self):
+        return self._log_sync_file_name
+
+    def get_logging_level(self , trans_logging_level ):
+        return self._logger_dict[trans_logging_level]
+    
+    def get_formatter(self):
+        return self._logger_formatter
+
+class log_trans(base):
+    '''logger_transaction <- public'''
+    def __init__(   self , 
+                    trans_logging_level : str = 'DEBUG' , 
+                    to_log : bool = True
+                ):
+        
+        base.__init__(self)
+        #creating a logger for transactions
+        self.logger_transaction = logging.getLogger(self._pmu_name)
+        self.logger_transaction.setLevel(self._logger_dict[trans_logging_level])
+
+        self._logger_transaction_file_handler = logging.FileHandler(self._log_file_name,mode='w')
+        self._logger_transaction_file_handler.setFormatter(self._logger_formatter)
+
+        self.logger_transaction.addHandler(self._logger_transaction_file_handler)
+
         #log master
         self.to_log = to_log
-        #syncer
+        #create log header
+        self.logger_transaction.info("log file")
+
+class log_sync(base):
+        def __init__(   self , 
+                    sync_logging_level : str = 'DEBUG' , 
+                    to_log : bool = True
+                ):
+
+            base.__init__(self)
+            #
+            self.logger_sync = logging.getLogger(self._syncer_name)
+            self.logger_sync.setLevel(self._logger_dict[sync_logging_level])
+
+            self._logger_sync_file_handler = logging.FileHandler(self._log_sync_file_name,mode='w')
+            self._logger_sync_file_handler.setFormatter(self._logger_formatter)
+
+            self.logger_sync.addHandler(self._logger_sync_file_handler)
+
+            #log master
+            self.to_log = to_log
+            #create log header
+            self.logger_sync.info("sync file")
+
+class syncer(log_sync):
+    def __init__(   self,
+                    ntp_server_sync     : bool  = True          ,
+                    set_deamon          : bool  = False         ,
+                    sync_lock_precision : float = (10**(-5))    ,
+                    ntp_sync_wait       : float = 1.0           ,
+                    to_log              : bool  = True          ,
+                    sync_logging_level  : str   = 'DEBUG'       
+                ):
+        log_sync.__init__(self , to_log=to_log , sync_logging_level=sync_logging_level)
+        
         self.fast_sync_wait = float(0.1)
         self.slow_sync_wait = float(10.0)
         
         self.time_offset    = 0.0
         self.ntp_sync_wait  = ntp_sync_wait
         self.sync_lock_precision = sync_lock_precision
+        
+        self.set_deamon = set_deamon
         if ntp_server_sync:
             self.sync_deamon()
 
@@ -74,7 +127,7 @@ class base_comm(object):
             actual_time_offset = time_sync(verbose=False)
             
             if(self.to_log):
-            self.logger_sync.debug(' __sync_func__ actual_time_offset : {} '.format(actual_time_offset) )
+                self.logger_sync.debug(' __sync_func__ actual_time_offset : {} '.format(actual_time_offset) )
             
             if ( -self.sync_lock_precision <= actual_time_offset <= self.sync_lock_precision ):
                 self.ntp_sync_wait = 1000
@@ -92,17 +145,22 @@ class base_comm(object):
         if (self.to_log):
             self.logger_sync.info('__sync_deamon__ : started')
         sync_deamon_TH = Thread( target = self.sync_func )
-        sync_deamon_TH.setDaemon(True)
+        sync_deamon_TH.setDaemon(self.set_deamon)
         sync_deamon_TH.start()
 
-class inherit_pmu(base_comm):
+class inherit_pmu(syncer, log_trans):
     def __init__(   self ,
                     IP_to_send          : str   = '10.64.37.35' , 
                     port_to_send        : int   = 12345         , 
-                    buffer              : int   = 1024          
+                    buffer              : int   = 1024          ,
+                    trans_logging_level : str   = 'DEBUG'       ,
+                    to_log_trans        : bool  = True          ,
+                    ntp_server_sync     : bool  = True          ,     
                 ):
-        base_comm.__init__(self)
-
+        #inits
+        log_trans.__init__(self , trans_logging_level= trans_logging_level , to_log= to_log_trans)
+        syncer.__init__(self, ntp_server_sync= )
+        
         #client
         self.cl_sock    = socket.socket( family = socket.AF_INET , 
                                          type = socket.SOCK_DGRAM)
@@ -111,7 +169,7 @@ class inherit_pmu(base_comm):
         self.PDC_port       = port_to_send
         self.BUFFER_SIZE    = buffer
 
-        def __del__(self):
+    def __del__(self):
         self.cl_sock.close()
 
     def __del__(self):
@@ -139,11 +197,7 @@ class inherit_pmu(base_comm):
         #recv
         pass
 
-class log_class(object):
-    def __init__(self):
-        pass
-
-class inherit_pdc(base_comm , log_class):
+class inherit_pdc():
     '''
         recv / send
     '''
@@ -153,7 +207,6 @@ class inherit_pdc(base_comm , log_class):
                   buffer_size           : int   = 1024        ,
                  ):
 
-        base_comm.__init__(self)
         #now server
 
         self.ip_server_is_binding   = ip_server_is_binding
