@@ -3,7 +3,7 @@ import struct
 from time import time
 
 from payloads import get_frasec
-from comm_classes import PDC_server
+from cl_comm import PDC_server
 
 #8 bit time quality msg
 TIME_FLAGS = 0b0010

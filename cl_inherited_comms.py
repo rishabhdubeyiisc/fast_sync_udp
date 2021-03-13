@@ -278,5 +278,3 @@ class inherit_pdc(syncer, log_trans):
         #recv
         #send
         pass
-    
-pdc = inherit_pdc()
