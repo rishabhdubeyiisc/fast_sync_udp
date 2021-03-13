@@ -234,8 +234,6 @@ class Pmu_Client(syncer, log_trans):
         #recv
         pass
 
-x = Pmu_Client()
-
 class PDC_server(syncer, log_trans):
     '''
         recv / send

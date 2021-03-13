@@ -1,11 +1,8 @@
 #! /usr/bin/env python3
 import os
 import sys
-import inspect
 import datetime
 import time
-import os
-import sys
 import subprocess
 import socket
 
@@ -80,6 +77,9 @@ def get_my_ipv4():
     finally :
         ip_resolver.close()
     return IP
+
+
+import inspect
 
 class debugger_class:
     '''Creates a log folder in present dir, Takes 1st argument as verbose = True/ False , 2nd filename'''
