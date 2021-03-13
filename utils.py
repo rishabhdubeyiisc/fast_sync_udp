@@ -36,6 +36,9 @@ def sync_deamon(offset):
         time.sleep(1)
 
 def run_cmd (string):
+    '''
+    run a system command pass as string
+    '''
     try: 
         stream = os.popen(string)
         return (stream.read())

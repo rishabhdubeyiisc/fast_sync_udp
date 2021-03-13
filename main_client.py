@@ -3,7 +3,7 @@ from struct import pack as struct_pack
 from time import time
 from payloads import common_frame_build
 from payloads import set_frasec
-from cl_client import Pmu_Client
+from comm_classes import Pmu_Client
 
 #protocol specific values
 DATA_FRAME_VALUE    = int(0xAA01)
