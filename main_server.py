@@ -4,7 +4,7 @@ from time import time
 
 from payloads import get_frasec
 from cl_comm import PDC_server
-
+from cl_inherited_comms import PDC_server
 #8 bit time quality msg
 TIME_FLAGS = 0b0010
 TIME_QUALITY = 0x5
@@ -40,7 +40,9 @@ if __name__ == "__main__":
     IP_to_bind = '10.64.37.35'
     port_opening= 12346
     pmu_IP = '10.64.37.34'
-    
+    buffer_size            = 1024
+    '''
+    comm class
     PDC = PDC_server(ip_server_is_binding   = IP_to_bind,
                      port_opening           = port_opening ,
                      buffer_size            = 1024  ,
@@ -50,5 +52,22 @@ if __name__ == "__main__":
                      sync_logging_level     = 'DEBUG',
                      trans_logging_level    = 'DEBUG'
                      )  
-
+    '''
+    '''
+    inherited
+    '''
+    PDC = PDC_server(
+                        ip_server_is_binding   = IP_to_bind    ,
+                        port_opening           = port_opening  ,
+                        buffer_size            = buffer_size   ,
+                        trans_logging_level    = 'DEBUG'       ,
+                        to_log_trans           = False         ,
+                        ntp_server_sync        = True          ,
+                        set_deamon             = False         ,
+                        sync_lock_precision    = (10**(-4))    ,
+                        ntp_sync_wait          = 1.0           ,
+                        to_log_syncer          = True          ,
+                        sync_logging_level     = 'DEBUG'
+                    )
+                    
     main(pdc = PDC , pmu_IP= pmu_IP  , pmu_port= port_opening)
