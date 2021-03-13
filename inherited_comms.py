@@ -155,11 +155,25 @@ class inherit_pmu(syncer, log_trans):
                     buffer              : int   = 1024          ,
                     trans_logging_level : str   = 'DEBUG'       ,
                     to_log_trans        : bool  = True          ,
-                    ntp_server_sync     : bool  = True          ,     
+                    ntp_server_sync     : bool  = True          ,
+                    set_deamon          : bool  = False         , 
+                    sync_lock_precision : float = (10 ** (-4))  ,
+                    ntp_sync_wait       : float = 1.0           ,
+                    to_log_syncer       : bool  = True          ,
+                    sync_logging_level  : str   = 'DEBUG'        
                 ):
         #inits
-        log_trans.__init__(self , trans_logging_level= trans_logging_level , to_log= to_log_trans)
-        syncer.__init__(self, ntp_server_sync= )
+        log_trans.__init__( self, 
+                            trans_logging_level =   trans_logging_level , 
+                            to_log              =   to_log_trans)
+        syncer.__init__(    self,
+                            ntp_server_sync     =   ntp_server_sync     , 
+                            set_deamon          =   set_deamon          , 
+                            sync_lock_precision =   sync_lock_precision ,
+                            ntp_sync_wait       =   ntp_sync_wait       ,
+                            to_log              =   to_log_syncer       ,
+                            sync_logging_level  =   sync_logging_level
+                        )
         
         #client
         self.cl_sock    = socket.socket( family = socket.AF_INET , 
@@ -197,16 +211,36 @@ class inherit_pmu(syncer, log_trans):
         #recv
         pass
 
-class inherit_pdc():
+class inherit_pdc(syncer, log_trans):
     '''
         recv / send
     '''
-    def __init__ (self, 
-                  ip_server_is_binding  : str   = '127.0.0.1' , 
-                  port_opening          : int   = 12345       , 
-                  buffer_size           : int   = 1024        ,
+    def __init__ (  self, 
+                    ip_server_is_binding  : str   = '127.0.0.1' , 
+                    port_opening          : int   = 12345       , 
+                    buffer_size           : int   = 1024        ,
+                    trans_logging_level   : str   = 'DEBUG'     ,
+                    to_log_trans                : bool  = True        ,
+                    ntp_server_sync       : bool  = True        , 
+                    set_deamon            : bool  = True        ,
+                    sync_lock_precision   : float = (10**(-4))  ,
+                    ntp_sync_wait         : float = 1.0         ,
+                    to_log_syncer                : bool  = True        ,
+                    sync_logging_level    : str   = 'DEBUG'
                  ):
-
+        log_trans.__init__( self , 
+                            trans_logging_level =   trans_logging_level,
+                            to_log              =   to_log_trans
+                          )
+        
+        syncer.__init__( self,
+                         ntp_server_sync        = ntp_server_sync       , 
+                         set_deamon             = set_deamon            ,
+                         sync_lock_precision    = sync_lock_precision   ,
+                         ntp_sync_wait          = ntp_sync_wait         ,
+                         to_log                 = to_log_syncer         ,
+                         sync_logging_level     = sync_logging_level
+                        )
         #now server
 
         self.ip_server_is_binding   = ip_server_is_binding
@@ -245,4 +279,4 @@ class inherit_pdc():
         #send
         pass
     
-    
+pdc = inherit_pdc()
