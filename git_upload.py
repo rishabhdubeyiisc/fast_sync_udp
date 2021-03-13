@@ -6,15 +6,16 @@ from utils import run_cmd
 def usage():
     print("please add up commit msg")
 
-'''
+
 if (len(sys.argv) < 2 ):
     usage()
     exit(-1)
-'''
+
 
 is_sudo = check_sudo()
 
-commit_msg = "testing git script"
+commit_msg = sys.argv[1]
+print(commit_msg)
 commit_msg = "'"+ str(commit_msg) +"'" 
 
 run_cmd('git config --global user.email "rishidd7devx2@gmail.com"')
