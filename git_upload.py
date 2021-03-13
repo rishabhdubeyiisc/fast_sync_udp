@@ -11,7 +11,6 @@ if (len(sys.argv) < 2 ):
     usage()
     exit(-1)
 
-
 is_sudo = check_sudo()
 
 commit_msg = sys.argv[1]
