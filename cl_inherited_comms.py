@@ -34,6 +34,9 @@ class base(object):
         self._syncer_name = str(self._pmu_name) + "_syncer"
     
     def get_name_from_ip(self):
+        '''
+        return name of pmu from dictionary
+        '''
         return self._pmu_name
     
     def get_trans_logger_name(self):
@@ -160,7 +163,7 @@ class syncer(log_sync):
         sync_deamon_TH.setDaemon(self.set_deamon)
         sync_deamon_TH.start()
 
-class PMU(syncer, log_trans):
+class Pmu_Client(syncer, log_trans):
     def __init__(   self ,
                     IP_to_send          : str   = '10.64.37.35' , 
                     port_to_send        : int   = 12345         , 
@@ -177,17 +180,18 @@ class PMU(syncer, log_trans):
         #inits
         log_trans.__init__( self, 
                             trans_logging_level =   trans_logging_level , 
-                            to_log              =   to_log_trans)
+                            to_log_trans        =   to_log_trans)
         
         syncer.__init__(    self,
                             ntp_server_sync     =   ntp_server_sync     , 
                             set_deamon          =   set_deamon          , 
                             sync_lock_precision =   sync_lock_precision ,
                             ntp_sync_wait       =   ntp_sync_wait       ,
-                            to_log              =   to_log_syncer       ,
+                            to_log_syncer       =   to_log_syncer       ,
                             sync_logging_level  =   sync_logging_level
                         )
-        
+
+        self.logger_transaction.info("instancing client begin : " + str(self.get_name_from_ip()))          
         #client
         self.cl_sock    = socket.socket( family = socket.AF_INET , 
                                          type = socket.SOCK_DGRAM)
@@ -196,23 +200,29 @@ class PMU(syncer, log_trans):
         self.PDC_port       = port_to_send
         self.BUFFER_SIZE    = buffer
 
-    def __del__(self):
-        self.cl_sock.close()
+        self.logger_transaction.info("IP_to_send    : " + str(self.PDC_IP))  
+        self.logger_transaction.info("PDC_port      : " + str(self.PDC_port))  
+        self.logger_transaction.info("buffer        : " + str(self.BUFFER_SIZE ))  
+
+        self.logger_transaction.info("instancing client done  : " + str(self.get_name_from_ip()))
+        self.logger_transaction.info("\n\n")
 
     def __del__(self):
+        self.logger_transaction.info("closing client begin : " + str(self.get_name_from_ip()))          
         self.cl_sock.close()
+        self.logger_transaction.info("closing client end : " + str(self.get_name_from_ip()))          
 
     def send_to_PDC (self , payload : bytes ):
         self.cl_sock.sendto( payload ,( self.PDC_IP , self.PDC_port ) )
-        if (self.to_log):
-            self.logger_transaction.debug("payload - {}".format(payload))
+        if (self.to_log_trans):
+            self.logger_transaction.debug("payload - {}".format(payload) )
 
     def recv_frm_PDC(self) -> bytes:
         '''
         return bytes of data recvd
         '''
         data_recvd , server_addr = self.cl_sock.recvfrom(self.BUFFER_SIZE)
-        if (self.to_log):
+        if (self.to_log_trans):
             self.logger_transaction.debug("msg , addr - {} , {}".format(data_recvd,server_addr))
         return data_recvd
 
@@ -223,6 +233,8 @@ class PMU(syncer, log_trans):
         #send
         #recv
         pass
+
+x = Pmu_Client()
 
 class PDC_server(syncer, log_trans):
     '''

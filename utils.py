@@ -15,6 +15,11 @@ def time_sync(verbose : bool = False) -> float:
     return offset after syncing with server lagging then will return a value so that after adding in FRACSEC we are syncyed with server
     '''
     sync_status = run_cmd("ntpdate 10.16.25.9")
+    
+    is_server_avail = last_sys_call_status()
+    if not is_server_avail:
+        return 0.0
+
     offset = float(sync_status.split()[-2])
 
     if (offset < 0):
@@ -30,14 +35,20 @@ def time_sync(verbose : bool = False) -> float:
             print("exact sync is imposible")
         return 0
 
-def sync_deamon(offset):
-    while(True):
-        offset = time_sync()
-        time.sleep(1)
 
-def run_cmd (string):
+def last_sys_call_status()->bool:
+    status = run_cmd("echo {$?}")
+    try :
+        value = int(status.split('\n')[0].split('{')[1].split('}')[0])
+        if value == 0 :
+            return True
+    except :
+        return False
+
+def run_cmd (string : str = "pwd")->str:
     '''
     run a system command pass as string
+    return status or error
     '''
     try: 
         stream = os.popen(string)
@@ -52,6 +63,7 @@ def check_sudo()->bool:
     '''
     if os.geteuid() == 0:
         print("root!")
+        return True
     else:
         print("not root.")
         subprocess.call(['sudo', 'python3', *sys.argv])

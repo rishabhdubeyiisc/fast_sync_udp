@@ -3,7 +3,7 @@ from struct import pack as struct_pack
 from time import time
 from payloads import common_frame_build
 from payloads import set_frasec
-from cl_comm import Pmu_Client
+from cl_inherited_comms import Pmu_Client
 
 #protocol specific values
 DATA_FRAME_VALUE    = int(0xAA01)
@@ -36,9 +36,12 @@ def main(pmu : Pmu_Client):
         print ("Server says " + str (data_recv.decode('utf-8')))
 
 if __name__ == "__main__":
-    IP_of_PDC = '10.64.37.35'
-    PDC_port_open = 12346
-
+    
+    IP_of_PDC       = '10.64.37.35'
+    PDC_port_open   = 12346
+    buffer          = 1024
+    '''
+    cl_comm
     pmu_c1 = Pmu_Client(IP_to_send          = IP_of_PDC,
                      port_to_send           = PDC_port_open,
                      buffer                 = 1024,
@@ -47,5 +50,18 @@ if __name__ == "__main__":
                      sync_lock_precision    =(10**(-4)),
                      sync_logging_level     ='DEBUG',
                      trans_logging_level    ='DEBUG')
-    
+    '''
+    pmu_c1 = Pmu_Client(
+                            IP_to_send          =   IP_of_PDC,
+                            port_to_send        =PDC_port_open,
+                            buffer              =buffer,
+                            trans_logging_level ='INFO',
+                            to_log_trans        =True,
+                            ntp_server_sync     =True,
+                            set_deamon          =False,
+                            sync_lock_precision =(10**(-4)),
+                            ntp_sync_wait       =1.0,
+                            to_log_syncer       =True,
+                            sync_logging_level  ='DEBUG'
+                        )
     main(pmu_c1)
