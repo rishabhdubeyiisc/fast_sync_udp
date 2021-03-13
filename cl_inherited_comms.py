@@ -148,7 +148,7 @@ class syncer(log_sync):
         sync_deamon_TH.setDaemon(self.set_deamon)
         sync_deamon_TH.start()
 
-class inherit_pmu(syncer, log_trans):
+class PMU(syncer, log_trans):
     def __init__(   self ,
                     IP_to_send          : str   = '10.64.37.35' , 
                     port_to_send        : int   = 12345         , 
@@ -166,6 +166,7 @@ class inherit_pmu(syncer, log_trans):
         log_trans.__init__( self, 
                             trans_logging_level =   trans_logging_level , 
                             to_log              =   to_log_trans)
+        
         syncer.__init__(    self,
                             ntp_server_sync     =   ntp_server_sync     , 
                             set_deamon          =   set_deamon          , 
@@ -211,7 +212,7 @@ class inherit_pmu(syncer, log_trans):
         #recv
         pass
 
-class inherit_pdc(syncer, log_trans):
+class PDC(syncer, log_trans):
     '''
         recv / send
     '''
@@ -220,12 +221,12 @@ class inherit_pdc(syncer, log_trans):
                     port_opening          : int   = 12345       , 
                     buffer_size           : int   = 1024        ,
                     trans_logging_level   : str   = 'DEBUG'     ,
-                    to_log_trans                : bool  = True        ,
+                    to_log_trans          : bool  = True        ,
                     ntp_server_sync       : bool  = True        , 
                     set_deamon            : bool  = True        ,
                     sync_lock_precision   : float = (10**(-4))  ,
                     ntp_sync_wait         : float = 1.0         ,
-                    to_log_syncer                : bool  = True        ,
+                    to_log_syncer         : bool  = True        ,
                     sync_logging_level    : str   = 'DEBUG'
                  ):
         log_trans.__init__( self , 
