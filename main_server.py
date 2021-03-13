@@ -38,7 +38,7 @@ def main(pdc : PDC_server , pmu_IP : str = '10.64.37.34' , pmu_port : int = 1234
 
 if __name__ == "__main__":
     IP_to_bind = '10.64.37.35'
-    port_opening= 12345
+    port_opening= 12346
     pmu_IP = '10.64.37.34'
     
     PDC = PDC_server(ip_server_is_binding   = IP_to_bind,

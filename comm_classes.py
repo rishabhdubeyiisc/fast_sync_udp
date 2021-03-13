@@ -222,7 +222,7 @@ class PDC_server():
             actual_time_offset = time_sync(verbose=False)
             
             if(self.to_log):
-            self.logger_sync.debug(' __sync_func__ actual_time_offset : {} '.format(actual_time_offset) )
+                self.logger_sync.debug(' __sync_func__ actual_time_offset : {} '.format(actual_time_offset) )
             
             if ( -self.sync_lock_precision <= actual_time_offset <= self.sync_lock_precision ):
                 self.ntp_sync_wait = 1000

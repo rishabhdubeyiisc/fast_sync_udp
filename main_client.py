@@ -37,7 +37,7 @@ def main(pmu : Pmu_Client):
 
 if __name__ == "__main__":
     IP_of_PDC = '10.64.37.35'
-    PDC_port_open = 12345
+    PDC_port_open = 12346
 
     pmu_c1 = Pmu_Client(IP_to_send          = IP_of_PDC,
                      port_to_send           = PDC_port_open,
