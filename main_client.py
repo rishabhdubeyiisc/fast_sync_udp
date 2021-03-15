@@ -17,7 +17,7 @@ def main(pmu : Pmu_Client):
         # pack time calc
         pack_time_start = time()
         #payload = struct_pack('!8I',SOC, FRASEC , SOC , FRASEC , SOC, FRASEC , SOC , FRASEC )
-        payload = frame_data_build(SOC = SOC , FRACSEC = FRACSEC)
+        payload = frame_data_build(SOC = SOC , FRACSEC = FRASEC)
         pack_time_end = time()
         print(pack_time_end - pack_time_start)
         #send to PDC

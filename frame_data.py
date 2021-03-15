@@ -38,7 +38,7 @@ def frame_data_build(
     CHK        :  2  
     '''
 
-    packet = struct_pack(   '!3H2IH2I4I2H3I2H'  ,
+    packet = struct_pack(   '!HHHIIHIIIIHHIIIHH'  ,
                             SYNC                , 
                             FRAME_SIZE          ,
                             IDCODE              ,
