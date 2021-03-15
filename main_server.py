@@ -2,9 +2,9 @@
 import struct
 from time import time
 
-from payloads import get_frasec
 from cl_comm import PDC_server
 from cl_inherited_comms import PDC_server
+
 #8 bit time quality msg
 TIME_FLAGS = 0b0010
 TIME_QUALITY = 0x5
@@ -23,8 +23,8 @@ def main(pdc : PDC_server , pmu_IP : str = '10.64.37.34' , pmu_port : int = 1234
             SOC_server = int(server_ct)
             FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 
-            SOC_Client = struct.unpack('!8I',data_recvd)[0]
-            FRASEC_Client = struct.unpack('!8I',data_recvd)[1]
+            SOC_Client = struct.unpack('!3H2IH2I4I2H3I2H',data_recvd)[0]
+            FRASEC_Client = struct.unpack('!3H2IH2I4I2H3I2H',data_recvd)[1]
 
             FRASEC_diff = FRASEC_server - FRASEC_Client
             print( SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_diff)

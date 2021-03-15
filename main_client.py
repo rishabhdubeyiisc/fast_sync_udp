@@ -1,8 +1,9 @@
 #! /usr/bin/env python3
 from struct import pack as struct_pack
 from time import time
-from payloads import common_frame_build
-from payloads import set_frasec
+
+
+from frame_data import frame_data_build
 from cl_inherited_comms import Pmu_Client
 
 #protocol specific values
@@ -26,7 +27,8 @@ def main(pmu : Pmu_Client):
         FRASEC = int (  (ct - SOC) * (10**6) )
         # pack time calc
         pack_time_start = time()
-        payload = struct_pack('!8I',SOC, FRASEC , SOC , FRASEC , SOC, FRASEC , SOC , FRASEC )
+        #payload = struct_pack('!8I',SOC, FRASEC , SOC , FRASEC , SOC, FRASEC , SOC , FRASEC )
+        payload = frame_data_build(SOC = SOC , FRACSEC = FRACSEC)
         pack_time_end = time()
         print(pack_time_end - pack_time_start)
         #send to PDC

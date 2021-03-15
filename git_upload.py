@@ -8,6 +8,7 @@ def usage():
     print("To set config    : pass True as second argument")
     print("example          : 'This is my commit msg' 'init'")
 
+is_sudo = check_sudo()
 
 if (len(sys.argv) < 2 ):
     usage()
@@ -17,8 +18,6 @@ if (len(sys.argv) > 2):
     if (sys.argv[2] == 'init'):
         run_cmd('git config --global user.email "rishidd7devx2@gmail.com"')
         run_cmd('git config --global user.name "rishabhdubeyiisc"')
-    if (sys.argv[2] == 'sudo' ):
-        is_sudo = check_sudo()
 
 commit_msg = sys.argv[1]
 print("committing : {} ".format(commit_msg))

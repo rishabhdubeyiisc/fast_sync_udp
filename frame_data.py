@@ -1,0 +1,60 @@
+from struct import pack as struct_pack
+
+def frame_data_build(
+             SYNC       : int = 0xAA01, 
+             FRAME_SIZE : int = 52, 
+             IDCODE     : int = 7734, 
+             SOC        : int , 
+             FRACSEC    : int ,
+             STAT       : int = 0,
+             PHASOR_VA  : int = 0x392B0000, 
+             PHASOR_VB  : int = 0xE36ACE7C, 
+             PHASOR_VC  : int = 0xE36A3183, 
+             PHASOR_IA  : int = 0x04440000, 
+             FREQ       : int = 0x09C4,
+             DFREQ      : int = 0,
+             ANALOG1    : int = 0x42C80000,
+             ANALOG2    : int = 0x447A0000,
+             ANALOG3    : int = 0x461C4000,
+             DIGITAL    : int = 0x3C12 ,
+             CHK        : int = 0xD43F) -> bytes:
+    '''
+    SYNC       :  2, 
+    FRAME_SIZE :  2, 
+    IDCODE     :  2, 
+    SOC        :  4, 
+    FRACSEC    :  4,
+    STAT       :  2,
+    PHASOR_VA  :  4, 
+    PHASOR_VB  :  4, 
+    PHASOR_VC  :  4, 
+    PHASOR_IA  :  4, 
+    FREQ       :  2,
+    DFREQ      :  2,
+    ANALOG1    :  4,
+    ANALOG2    :  4,
+    ANALOG3    :  4,
+    DIGITAL    :  2,
+    CHK        :  2  
+    '''
+
+    packet = struct_pack(   '!3H2IH2I4I2H3I2H'  ,
+                            SYNC                , 
+                            FRAME_SIZE          ,
+                            IDCODE              ,
+                            SOC                 ,
+                            FRACSEC             ,
+                            STAT                ,
+                            PHASOR_VA           ,
+                            PHASOR_VB           ,
+                            PHASOR_VC           ,
+                            PHASOR_IA           ,
+                            FREQ                ,
+                            DFREQ               ,
+                            ANALOG1             ,
+                            ANALOG2             ,
+                            ANALOG3             ,
+                            DIGITAL             ,
+                            CHK                 
+                        )
+    return packet
