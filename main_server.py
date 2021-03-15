@@ -24,7 +24,7 @@ def main(   pmu34_db    : db_client,
             #recv
             data_recvd , addr_of_client = pdc.recv()
             #
-            server_ct = time() - pdc.get_time_offset()
+            server_ct = time() - 0
             SOC_server = int(server_ct)
             FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 
