@@ -25,12 +25,13 @@ class db_client_cls:
     def swtich_to_DB(self):
         self.client.switch_database(self.IFDbname)
 
-    def write_to_db ( self , data_json , ERR_str = "", verbose_mode = True):
+    def write_to_db ( self , data_json , ERR_str = "", verbose_mode = True) -> bool:
         if (verbose_mode):
             print(data_json)
         is_data_wr = self.client.write_points(data_json)
         if(not is_data_wr):
             print("ERR : data not written " + ERR_str )
+        return is_data_wr
 
     def create_me_json (self, 
                         measurement = 'comm_delay'  , 

@@ -6,7 +6,7 @@ import queue
 
 from cl_comm import PDC_server
 from cl_inherited_comms import PDC_server
-from cl_db_client import db_client_cls as db_client
+from cl_utils import db_client_cls as db_client
 #8 bit time quality msg
 TIME_FLAGS = 0b0010
 TIME_QUALITY = 0x5
@@ -17,8 +17,7 @@ TIME_MSG = bytes(lis)
 def main(   pmu34_db    : db_client, 
             pdc         : PDC_server            , 
             pmu_IP      : str = '10.64.37.34'   , 
-            pmu_port    : int = 12345           
-            
+            pmu_port    : int = 12345               
         ):
     sqn_num = int(0)
     try :
@@ -54,9 +53,7 @@ def main(   pmu34_db    : db_client,
     except KeyboardInterrupt :
         print("exited by user")
 
-def receiver(   pmu34_db    : db_client, 
-                pdc         : PDC_server            ,           
-            ):
+def recv_func( pdc : PDC_server ):
     sqn_num = int(0)
     try :
         while True:
@@ -72,29 +69,28 @@ def receiver(   pmu34_db    : db_client,
             FRASEC_diff = FRASEC_server - FRASEC_Client
             SOC_diff = SOC_server - SOC_Client
             print( SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_diff)
-            #store over db
-            entry = pmu34_db.create_me_json(measurement='comm_delay',
-                                    tag_name='pmu_34',tag_field='fracsec_diff',
-                                    field_name='pdc_pmu_diff',field_value=FRASEC_diff)
-            pmu34_db.write_to_db(data_json=entry,verbose_mode=False)
-
     except KeyboardInterrupt :
         print("exited by user")
 
-def cmd_send(   pmu34_db    : db_client, 
-            pdc         : PDC_server            , 
-            pmu_IP      : str = '10.64.37.34'   , 
-            pmu_port    : int = 12345           
-            
-        ):
+def send_func(  pdc         : PDC_server            , 
+                pmu_IP      : str = '10.64.37.34'   , 
+                pmu_port    : int = 12345           
+            ):
     sqn_num = int(0)
     try :
         sqn_num = sqn_num + 1
         msg = str(sqn_num)
-        pdc.send_to(pmu_IP=addr_of_client[0] , pmu_port=addr_of_client[1] , payload = msg.encode() )
+        pdc.send_to(pmu_IP=pmu_IP , pmu_port= pmu_port, payload = msg.encode() )
 
     except KeyboardInterrupt :
         print("exited by user")
+
+def upload_func(pmu34_db    : db_client ):
+    #store over db
+    entry = pmu34_db.create_me_json(measurement='comm_delay',
+                                    tag_name='pmu_34',tag_field='fracsec_diff',
+                                    field_name='pdc_pmu_diff',field_value=FRASEC_diff)
+    pmu34_db.write_to_db(data_json=entry,verbose_mode=False)
 
 if __name__ == "__main__":
     IP_to_bind      = '10.64.37.35'
@@ -131,5 +127,7 @@ if __name__ == "__main__":
                     )
     #creating RT time series DB
     pmu34_db = db_client(IFDbname='PMU_34')
+    #TODO create analytics and main_thread
 
+    #debug func
     main(pdc = PDC , pmu_IP= pmu_IP  , pmu_port= port_opening , pmu34_db=pmu34_db)
