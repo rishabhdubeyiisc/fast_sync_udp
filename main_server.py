@@ -4,7 +4,7 @@ from time import time
 
 from cl_comm import PDC_server
 from cl_inherited_comms import PDC_server
-
+from cl_db_client import db_client_cls as db_client
 #8 bit time quality msg
 TIME_FLAGS = 0b0010
 TIME_QUALITY = 0x5
@@ -12,15 +12,19 @@ lis = [TIME_FLAGS, TIME_QUALITY ]
 TIME_MSG = bytes(lis) 
 #TIME_MSG = 0b00100101
 
-
-def main(pdc : PDC_server , pmu_IP : str = '10.64.37.34' , pmu_port : int = 12345 ):
+def main(   pmu34_db    : db_client, 
+            pdc         : PDC_server            , 
+            pmu_IP      : str = '10.64.37.34'   , 
+            pmu_port    : int = 12345           
+            
+        ):
     sqn_num = int(0)
     try :
         while True:
             #recv
             data_recvd , addr_of_client = pdc.recv()
             #
-            server_ct = time() + pdc.get_time_offset()
+            server_ct = time() - pdc.get_time_offset()
             SOC_server = int(server_ct)
             FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 
@@ -29,6 +33,11 @@ def main(pdc : PDC_server , pmu_IP : str = '10.64.37.34' , pmu_port : int = 1234
             FRASEC_diff = FRASEC_server - FRASEC_Client
             SOC_diff = SOC_server - SOC_Client
             print( SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_diff)
+            #store over db
+            entry = pmu34_db.create_me_json(measurement='comm_delay',
+                                    tag_name='pmu_34',tag_field='fracsec_diff',
+                                    field_name='pdc_pmu_diff',field_value=FRASEC_diff)
+            pmu34_db.write_to_db(data_json=entry,verbose_mode=False)
             #send
             sqn_num = sqn_num + 1
             msg = str(sqn_num)
@@ -70,5 +79,8 @@ if __name__ == "__main__":
                         to_log_syncer          = True          ,
                         sync_logging_level     = 'DEBUG'
                     )
-                    
-    main(pdc = PDC , pmu_IP= pmu_IP  , pmu_port= port_opening)
+    #creating RT time series DB
+    pmu34_db = db_client(IFDbname='PMU_34')
+
+
+    main(pdc = PDC , pmu_IP= pmu_IP  , pmu_port= port_opening , pmu34_db=pmu34_db)
