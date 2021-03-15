@@ -6,17 +6,6 @@ from time import time
 from frame_data import frame_data_build
 from cl_inherited_comms import Pmu_Client
 
-#protocol specific values
-DATA_FRAME_VALUE    = int(0xAA01)
-MAX_FRAME_SIZE      = int(0xFFFF)
-IDCODE_VALUE        = int(0x0002)
-SOC_VALUE           = int(0x99887766)
-
-TIME_FLAGS = 0b0010
-TIME_QUALITY = 0x5
-lis = [TIME_FLAGS, TIME_QUALITY ]
-TIME_MSG = bytes(lis) 
-
 def main(pmu : Pmu_Client):
     pack_time_start = 0
     pack_time_end = 0
@@ -54,16 +43,16 @@ if __name__ == "__main__":
                      trans_logging_level    ='DEBUG')
     '''
     pmu_c1 = Pmu_Client(
-                            IP_to_send          =   IP_of_PDC,
-                            port_to_send        =PDC_port_open,
-                            buffer              =buffer,
-                            trans_logging_level ='INFO',
-                            to_log_trans        =True,
-                            ntp_server_sync     =True,
-                            set_deamon          =False,
-                            sync_lock_precision =(10**(-4)),
-                            ntp_sync_wait       =1.0,
-                            to_log_syncer       =True,
-                            sync_logging_level  ='DEBUG'
+                            IP_to_send          =   IP_of_PDC       ,
+                            port_to_send        =   PDC_port_open   ,
+                            buffer              =   buffer          ,
+                            trans_logging_level =   'INFO'          ,
+                            to_log_trans        =   True            ,
+                            ntp_server_sync     =   True            ,
+                            set_deamon          =   False           ,
+                            sync_lock_precision =   (10**(-4))      ,
+                            ntp_sync_wait       =   1.0             ,
+                            to_log_syncer       =   True            ,
+                            sync_logging_level  =   'DEBUG'
                         )
     main(pmu_c1)
