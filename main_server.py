@@ -12,6 +12,7 @@ lis = [TIME_FLAGS, TIME_QUALITY ]
 TIME_MSG = bytes(lis) 
 #TIME_MSG = 0b00100101
 
+
 def main(pdc : PDC_server , pmu_IP : str = '10.64.37.34' , pmu_port : int = 12345 ):
     sqn_num = int(0)
     try :
@@ -23,10 +24,10 @@ def main(pdc : PDC_server , pmu_IP : str = '10.64.37.34' , pmu_port : int = 1234
             SOC_server = int(server_ct)
             FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 
-            SOC_Client = struct.unpack('!3H2IH2I4I2H3I2H',data_recvd)[0]
-            FRASEC_Client = struct.unpack('!3H2IH2I4I2H3I2H',data_recvd)[1]
-
+            SOC_Client = struct.unpack('!HHHIIHIIIIHHIIIHH',data_recvd)[3]
+            FRASEC_Client = struct.unpack('!HHHIIHIIIIHHIIIHH',data_recvd)[4]
             FRASEC_diff = FRASEC_server - FRASEC_Client
+            SOC_diff = SOC_server - SOC_Client
             print( SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_diff)
             #send
             sqn_num = sqn_num + 1
@@ -37,10 +38,10 @@ def main(pdc : PDC_server , pmu_IP : str = '10.64.37.34' , pmu_port : int = 1234
         print("exited by user")
 
 if __name__ == "__main__":
-    IP_to_bind = '10.64.37.35'
-    port_opening= 12346
-    pmu_IP = '10.64.37.34'
-    buffer_size            = 1024
+    IP_to_bind      = '10.64.37.35'
+    port_opening    = 9991
+    pmu_IP          = '10.64.37.34'
+    buffer_size     = 1024
     '''
     comm class
     PDC = PDC_server(ip_server_is_binding   = IP_to_bind,

@@ -57,6 +57,9 @@ class base(object):
     def get_formatter(self):
         return self._logger_formatter
 
+    def get_ip(self):
+        return self._pmu_ip
+
 class log_trans(base):
     '''logger_transaction <- public'''
     def __init__(   self , 
@@ -265,20 +268,29 @@ class PDC_server(syncer, log_trans):
                          sync_logging_level     = sync_logging_level
                         )
 
+        self.logger_transaction.info("instancing PDC_server @ {}".format( self.get_ip() ))
         #now server
-
         self.ip_server_is_binding   = ip_server_is_binding
         self.port_opening           = port_opening
         self.buffer_size            = buffer_size
-        
+       
         self.server_sock            = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 
         try:
             self.server_sock.bind((self.ip_server_is_binding,self.port_opening))
         except socket.error as err :
+            self.logger_transaction.info( "server_sock bind error {}".format( (self.ip_server_is_binding,self.port_opening) ) )
             print("bind error " , str(err) )
+            exit(-2)
+        #logs
+        self.logger_transaction.info( "ip_server_is_binding - {}".format( self.ip_server_is_binding ) )
+        self.logger_transaction.info( "port_opening - {}".format( port_opening ) )
+        self.logger_transaction.info( "buffer_size - {}".format( buffer_size ) )
+        self.logger_transaction.info( "server_sock bind {}".format( (self.ip_server_is_binding,self.port_opening) ) )
+
 
     def __del__(self):
+        self.logger_transaction.info( "server_sock close {}".format( (self.ip_server_is_binding,self.port_opening) ) )
         self.server_sock.close()
 
     def recv(self) -> bytes:

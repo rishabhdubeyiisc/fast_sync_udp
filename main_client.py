@@ -29,7 +29,7 @@ def main(pmu : Pmu_Client):
 if __name__ == "__main__":
     
     IP_of_PDC       = '10.64.37.35'
-    PDC_port_open   = 12346
+    PDC_port_open   = 9991
     buffer          = 1024
     '''
     cl_comm
