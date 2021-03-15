@@ -2,6 +2,7 @@
 from influxdb import InfluxDBClient
 import datetime
 import pytz
+
 class db_client_cls:
     def __init__(self, IFhost = "localhost" , IFport = 8086 , IFDbname = 'CPU'):
         self.IFhost = IFhost
@@ -46,3 +47,29 @@ class db_client_cls:
                     ]
 
         return data_json
+
+class Thread_safe_queue():
+    def __init__(self , BUF_SIZE = 0 , to_log_queue = True):
+        '''
+            BUF_SIZE = 0 -> infinite size queue
+        '''
+        import queue as Queue
+        import logging
+        from utils import LogIt
+        self.logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='queue.log',to_log=to_log_queue)
+        self.q = Queue.Queue(BUF_SIZE)
+        self.to_log = to_log_queue
+
+    def put_in_queue(self , item):
+        if not self.q.full():
+            self.q.put(item)
+            if self.to_log :
+                self.logger.log('Putting ' + str(item) + ' : ' + str(self.q.qsize()) + ' items in queue')
+
+    def remove_from_queue(self):
+        item = None
+        if not self.q.empty():
+            item = self.q.get()
+                if self.to_log :
+                self.logger.log('Getting ' + str(item)  + ' : ' + str(self.q.qsize()) + ' items in queue')
+        return item
