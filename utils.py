@@ -81,6 +81,19 @@ def get_my_ipv4()->str:
         ip_resolver.close()
     return IP
 
+def ping_time(ip : str = '10.64.37.34')->float:
+    cmd = "ping -c 1 " + ip
+    ret = run_cmd(cmd)
+    value , unit = (ret.split('\n\n')[0].split('time=')[1]).split()
+    if unit == 'us':
+        return (float(value)) 
+    elif unit == 'ms':
+        return (float(value)) * 1000
+    elif unit == 's' :
+        print("ping time exceeded than a second")
+        return (float(value)) * 1000 * 1000
+    else :
+        return float(0xDEAD)
 
 import inspect
 
