@@ -66,7 +66,10 @@ def check_sudo()->bool:
         subprocess.call(['sudo', 'python3', *sys.argv])
         sys.exit()
 
-def get_my_ipv4():
+def get_my_ipv4()->str:
+    '''
+    function to resolve ip
+    '''
     IP = '127.0.0.1'
     ip_resolver = socket.socket(socket.AF_INET , socket.SOCK_DGRAM)
     try :
