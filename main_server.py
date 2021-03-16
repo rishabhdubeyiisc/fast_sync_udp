@@ -28,7 +28,7 @@ def main(   th_Q        : TH_Queue              ,
             loop_start_time = time()
             data_recvd , addr_of_client = pdc.recv()
             #
-            server_ct = time() #+ pdc.get_time_offset()
+            server_ct = time() + pdc.get_time_offset()
             SOC_server = int(server_ct)
             FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 

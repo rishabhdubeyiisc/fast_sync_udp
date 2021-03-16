@@ -119,11 +119,11 @@ class syncer(log_sync):
                             sync_logging_level  =sync_logging_level
                          )
         
-        self.fast_sync_wait = float(0.1)
-        self.slow_sync_wait = float(100.0)
+        self.fast_sync_wait = float(60.0)
+        self.slow_sync_wait = float(60.0)
         
         self.time_offset            = 0.0
-        self.ntp_sync_wait          = ntp_sync_wait
+        self.ntp_sync_wait          = float(60.0)
         self.sync_lock_precision    = sync_lock_precision
         self.sync_lock_upperbound   = sync_lock_upperbound
         self.set_deamon = set_deamon
@@ -144,7 +144,7 @@ class syncer(log_sync):
             
             if ( -self.sync_lock_precision <= actual_time_offset <= self.sync_lock_precision ):
                 self.ntp_sync_wait = self.slow_sync_wait
-                self.time_offset = 0.0
+                self.time_offset = actual_time_offset
                 
                 if(self.to_log_syncer):
                     self.logger_sync.debug(' __sync_func__ LOCKED actual , framed : {} - {}'.format(actual_time_offset,self.time_offset) )
