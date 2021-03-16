@@ -47,14 +47,14 @@ def main(   th_Q        : TH_Queue              ,
             db_end_time = time()
             '''
             #push to queue
-            '''
+            
             db_start_time = time()
             entry = pmu34_db.create_me_json(measurement='comm_delay',
                         tag_name='pmu_34',tag_field='fracsec_diff',
                         field_name='pdc_pmu_diff',field_value=FRASEC_diff)
             th_Q.put_in_queue(item = entry)
             db_end_time = time()
-            '''
+            
             #send
             sqn_num = sqn_num + 1
             msg = str(sqn_num)
@@ -99,9 +99,15 @@ def send_func(  pdc         : PDC_server            ,
         print("exited by user")
 
 def upload_func(pmu34_db    : db_client , th_Q : TH_Queue):
-    #store over db
-    entry = th_Q.remove_from_queue()
-    pmu34_db.write_to_db(data_json=entry,verbose_mode=False)
+    while True:
+        #store over db
+        entry = th_Q.remove_from_queue()
+        #print("entry : {} ".format(entry))
+        if entry != None :
+            #print("entry : {} ".format(entry))
+            pmu34_db.write_to_db(data_json=entry,verbose_mode=False)
+        #import time
+        #time.sleep(1.0)
 
 if __name__ == "__main__":
     IP_to_bind      = '10.64.37.35'
@@ -141,7 +147,11 @@ if __name__ == "__main__":
     #TODO create thread safe queue
     th_Q = TH_Queue(BUF_SIZE=0 , to_log_queue=True)
     #TODO create analytics and main_thread
-    #analytic_TH = threading.Thread(target=upload_func , args=(pmu34_db , th_Q) )
-    #analytic_TH.start()
+    analytic_TH = threading.Thread(target=upload_func , args=(pmu34_db , th_Q , ) )
+    analytic_TH.setDaemon(True)
+    analytic_TH.start()
+    #threaded main
+    
+    
     #debug func
     main( th_Q = th_Q , pdc = PDC , pmu_IP= pmu_IP  , pmu_port= port_opening , pmu34_db=pmu34_db )

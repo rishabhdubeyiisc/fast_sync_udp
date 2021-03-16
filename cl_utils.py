@@ -10,6 +10,7 @@ class db_client_cls:
         self.IFDbname = IFDbname
         #create a client
         self.client = InfluxDBClient(host=IFhost, port=IFport , database=IFDbname)
+        print("IFDbname : {}".format(self.IFDbname))
         print(self.get_db_list())
         to_run_script= input("press y/Y if DB created : ")
         if (to_run_script.lower() != 'y'):
@@ -68,6 +69,9 @@ class Thread_safe_queue():
                 self.logger.log('Putting ' + str(item) + ' : ' + str(self.q.qsize()) + ' items in queue')
 
     def remove_from_queue(self):
+        '''
+            return item
+        '''
         item = None
         if not self.q.empty():
             item = self.q.get()
