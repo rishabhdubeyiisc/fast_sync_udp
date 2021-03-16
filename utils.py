@@ -11,7 +11,7 @@ def time_sync(verbose : bool = False) -> float:
     return float 
     return offset after syncing with server lagging then will return a value so that after adding in FRACSEC we are syncyed with server
     '''
-    sync_status = run_cmd("ntpdate 10.16.25.9")
+    sync_status = run_cmd("ntpdate 10.64.37.35")
     
     is_server_avail = last_sys_call_status()
     if not is_server_avail:
