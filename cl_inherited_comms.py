@@ -4,6 +4,7 @@ import socket
 import threading
 import logging
 from threading import Thread
+import multiprocessing
 
 from time import time
 from time import sleep as time_sleep
@@ -162,9 +163,13 @@ class syncer(log_sync):
     def sync_deamon(self):
         if (self.to_log_syncer):
             self.logger_sync.info('__sync_deamon__ : started')
+        '''
         sync_deamon_TH = Thread( target = self.sync_func )
         sync_deamon_TH.setDaemon(self.set_deamon)
         sync_deamon_TH.start()
+        '''
+        sync_deamon_PR = multiprocessing.Process(target=self.sync_func )
+        sync_deamon_PR.start()
 
 class Pmu_Client(syncer, log_trans):
     def __init__(   self ,

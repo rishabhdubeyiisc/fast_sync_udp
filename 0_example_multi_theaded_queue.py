@@ -24,8 +24,7 @@ class ProducerThread(threading.Thread):
             if not q.full():
                 item = item + 1
                 q.put(item)
-                logger.log('Putting ' + str(item)  
-                              + ' : ' + str(q.qsize()) + ' items in queue')
+                logger.log('Putting ' + str(item) + ' : ' + str(q.qsize()) + ' items in queue')
                 time.sleep(1.0)
         return
 

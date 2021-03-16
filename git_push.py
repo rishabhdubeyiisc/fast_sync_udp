@@ -19,13 +19,14 @@ if (len(sys.argv) > 2):
 
 is_sudo = check_sudo()
 
+run_cmd("chmod +x *.py")
+run_cmd("rm -r *.log")
+run_cmd("rm -rf '__pycache__'")
+
 commit_msg = sys.argv[1]
 print("committing : {} ".format(commit_msg))
 commit_msg = "'"+ str(commit_msg) +"'" 
 
-run_cmd("chmod +x *.py")
-run_cmd("rm -r *.log")
-run_cmd("rm -rf '__pycache__'")
 run_cmd("git add .")
 run_cmd("git commit -m " + str(commit_msg) )
 run_cmd("git push")

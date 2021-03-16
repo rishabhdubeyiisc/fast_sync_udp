@@ -145,11 +145,11 @@ if __name__ == "__main__":
     #creating RT time series DB
     pmu34_db = db_client(IFDbname='PMU_34')
     #TODO create thread safe queue
-    th_Q = TH_Queue(BUF_SIZE=0 , to_log_queue=True)
+    th_Q = TH_Queue(BUF_SIZE=0 , to_log_queue=False)
     #TODO create analytics and main_thread
     analytic_TH = threading.Thread(target=upload_func , args=(pmu34_db , th_Q , ) )
     analytic_TH.setDaemon(True)
-    analytic_TH.start()
+    #analytic_TH.start()
     #threaded main
     
     
