@@ -11,7 +11,7 @@ def main(pmu : Pmu_Client):
     pack_time_end = 0
     while True :
         #create payload
-        ct = time() - 0
+        ct = time() + pmu.get_time_offset()
         SOC = int(ct)
         FRASEC = int (  (ct - SOC) * (10**6) )
         # pack time calc

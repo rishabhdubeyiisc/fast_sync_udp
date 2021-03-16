@@ -71,6 +71,6 @@ class Thread_safe_queue():
         item = None
         if not self.q.empty():
             item = self.q.get()
-                if self.to_log :
+            if self.to_log :
                 self.logger.log('Getting ' + str(item)  + ' : ' + str(self.q.qsize()) + ' items in queue')
         return item
