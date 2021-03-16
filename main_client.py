@@ -2,7 +2,6 @@
 from struct import pack as struct_pack
 from time import time
 
-
 from frame_data import frame_data_build
 from cl_inherited_comms import Pmu_Client
 
@@ -11,7 +10,7 @@ def main(pmu : Pmu_Client):
     pack_time_end = 0
     while True :
         #create payload
-        ct = time() + pmu.get_time_offset()
+        ct = time() 
         SOC = int(ct)
         FRASEC = int (  (ct - SOC) * (10**6) )
         # pack time calc

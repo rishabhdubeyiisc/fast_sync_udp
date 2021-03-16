@@ -130,6 +130,8 @@ class syncer(log_sync):
         if ntp_server_sync:
             self.sync_deamon()
 
+        self.logger_sync.info("sync_lock_precision : ".format(self.sync_lock_precision))
+
     def get_time_offset (self):
         return self.time_offset
 
@@ -161,8 +163,7 @@ class syncer(log_sync):
             time_sleep(self.ntp_sync_wait)
 
     def sync_deamon(self):
-        if (self.to_log_syncer):
-            self.logger_sync.info('__sync_deamon__ : started')
+        self.logger_sync.info('__sync_deamon__ : started')
         '''
         sync_deamon_TH = Thread( target = self.sync_func )
         sync_deamon_TH.setDaemon(self.set_deamon)

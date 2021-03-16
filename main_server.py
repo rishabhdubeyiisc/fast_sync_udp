@@ -28,7 +28,7 @@ def main(   th_Q        : TH_Queue              ,
             loop_start_time = time()
             data_recvd , addr_of_client = pdc.recv()
             #
-            server_ct = time() + pdc.get_time_offset()
+            server_ct = time() #+ pdc.get_time_offset()
             SOC_server = int(server_ct)
             FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 
@@ -112,7 +112,7 @@ def upload_func(pmu34_db    : db_client , th_Q : TH_Queue):
 if __name__ == "__main__":
     IP_to_bind      = '10.64.37.35'
     port_opening    = 9991
-    pmu_IP          = '10.64.37.34'
+    pmu_IP          = '10.64.37.31'
     buffer_size     = 1024
     '''
     comm class
