@@ -6,12 +6,13 @@ import time
 import subprocess
 import socket
 
-def time_sync(verbose : bool = False) -> float:
+def time_sync(verbose : bool = False , ntp_server : str = "10.64.37.35") -> float:
     '''
     return float 
     return offset after syncing with server lagging then will return a value so that after adding in FRACSEC we are syncyed with server
     '''
-    sync_status = run_cmd("ntpdate 10.64.37.35")
+    cmd = "ntpdate " + ntp_server
+    sync_status = run_cmd(cmd)
     
     is_server_avail = last_sys_call_status()
     if not is_server_avail:

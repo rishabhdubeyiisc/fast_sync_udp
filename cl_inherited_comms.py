@@ -243,7 +243,7 @@ class Pmu_Client(syncer, log_trans):
         #recv
         pass
 
-class PDC_server(syncer, log_trans):
+class PDC_server(log_trans):
     '''
         recv / send
     '''
@@ -265,6 +265,7 @@ class PDC_server(syncer, log_trans):
                             to_log_trans        =   to_log_trans
                           )
         
+        '''
         syncer.__init__( self,
                          ntp_server_sync        = ntp_server_sync       , 
                          set_deamon             = set_deamon            ,
@@ -273,7 +274,7 @@ class PDC_server(syncer, log_trans):
                          to_log_syncer          = to_log_syncer         ,
                          sync_logging_level     = sync_logging_level
                         )
-
+        '''
         self.logger_transaction.info("instancing PDC_server @ {}".format( self.get_ip() ))
         #now server
         self.ip_server_is_binding   = ip_server_is_binding
@@ -320,3 +321,4 @@ class PDC_server(syncer, log_trans):
         #recv
         #send
         pass
+
