@@ -4,6 +4,7 @@ from time import time
 
 from frame_data import frame_data_build
 from cl_inherited_comms import Pmu_Client
+from utils import sync_me
 
 def main(pmu : Pmu_Client):
     pack_time_start = 0
@@ -30,6 +31,7 @@ if __name__ == "__main__":
     IP_of_PDC       = '10.64.37.35'
     PDC_port_open   = 9991
     buffer          = 1024
+    sync_lock_precision =   (10**(-4)) 
     '''
     cl_comm
     pmu_c1 = Pmu_Client(IP_to_send          = IP_of_PDC,
@@ -49,9 +51,14 @@ if __name__ == "__main__":
                             to_log_trans        =   True            ,
                             ntp_server_sync     =   True            ,
                             set_deamon          =   False           ,
-                            sync_lock_precision =   (10**(-4))      ,
+                            sync_lock_precision =   sync_lock_precision ,
                             ntp_sync_wait       =   1.0             ,
                             to_log_syncer       =   True            ,
                             sync_logging_level  =   'DEBUG'
                         )
+
+    #sync to server
+    sync_me(sync_lock_upperbound=sync_lock_precision ,verbose=True)
+
+    #game
     main(pmu_c1)

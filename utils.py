@@ -132,9 +132,8 @@ def sync_me ( sync_lock_upperbound : float = (10 ** (-4) ) , verbose : bool = Tr
     while ( abs(offset) > sync_lock_upperbound ) :
         offset = time_sync()
         if verbose :
-            print(offset)
+            print("sync_lock_upperbound : {} , offset : {} ".format(sync_lock_upperbound , offset))
     return offset
-    
 
 import inspect
 
