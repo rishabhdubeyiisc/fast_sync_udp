@@ -33,7 +33,6 @@ def time_sync(verbose : bool = False , ntp_server : str = "10.64.37.35") -> floa
             print("exact sync is imposible")
         return 0
 
-
 def last_sys_call_status()->bool:
     status = run_cmd("echo {$?}")
     try :
@@ -127,6 +126,14 @@ class LogIt():
     def log(self ,msg : str):
         if self.to_log :
             self.logger_transaction.debug(msg)
+
+def sync_me ( sync_lock_upperbound : float = (10 ** (-4) ) , verbose : bool = True ):
+    offset = float(1000.0)
+    while ( abs(offset) <= sync_lock_upperbound ) :
+        offset = time_sync()
+        if verbose :
+            print(offset)
+    
 
 import inspect
 
