@@ -133,6 +133,7 @@ def sync_me ( sync_lock_upperbound : float = (10 ** (-4) ) , verbose : bool = Tr
         offset = time_sync()
         if verbose :
             print(offset)
+    return offset
     
 
 import inspect
@@ -211,3 +212,6 @@ class debugger_class:
     def remove_slash_n(self , string):
         string = ''.join((filter(lambda i: i not in '\n', string)))
         return str(string)
+
+
+f = sync_me()
