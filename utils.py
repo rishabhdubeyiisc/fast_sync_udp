@@ -129,7 +129,7 @@ class LogIt():
 
 def sync_me ( sync_lock_upperbound : float = (10 ** (-4) ) , verbose : bool = True ):
     offset = float(1000.0)
-    while ( abs(offset) <= sync_lock_upperbound ) :
+    while ( abs(offset) > sync_lock_upperbound ) :
         offset = time_sync()
         if verbose :
             print(offset)
@@ -212,6 +212,3 @@ class debugger_class:
     def remove_slash_n(self , string):
         string = ''.join((filter(lambda i: i not in '\n', string)))
         return str(string)
-
-
-f = sync_me()
