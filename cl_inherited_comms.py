@@ -130,7 +130,7 @@ class syncer(log_sync):
         if ntp_server_sync:
             self.sync_deamon()
 
-        self.logger_sync.info("sync_lock_precision : ".format(self.sync_lock_precision))
+        self.logger_sync.info("sync_lock_precision : {} ".format(self.sync_lock_precision))
 
     def get_time_offset (self):
         return self.time_offset

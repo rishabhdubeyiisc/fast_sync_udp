@@ -135,7 +135,7 @@ if __name__ == "__main__":
                         buffer_size            = buffer_size   ,
                         trans_logging_level    = 'DEBUG'       ,
                         to_log_trans           = False         ,
-                        ntp_server_sync        = True          ,
+                        ntp_server_sync        = False          ,
                         set_deamon             = False         ,
                         sync_lock_precision    = (10**(-4))    ,
                         ntp_sync_wait          = 1.0           ,
