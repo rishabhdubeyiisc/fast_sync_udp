@@ -119,8 +119,8 @@ class syncer(log_sync):
                             sync_logging_level  =sync_logging_level
                          )
         
-        self.fast_sync_wait = float(120.0)
-        self.slow_sync_wait = float(120.0)
+        self.fast_sync_wait = float(60.0)
+        self.slow_sync_wait = float(60.0)
         
         self.time_offset            = 0.0
         self.ntp_sync_wait          = float(60.0)
