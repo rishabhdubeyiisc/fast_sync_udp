@@ -95,38 +95,6 @@ def ping_time(ip : str = '10.64.37.34')->float:
     else :
         return float(0xDEAD)
 
-class LogIt():
-    def __init__(   self , 
-                    logger_name     : str   = 'logger'      , 
-                    logging_level   : str   = 'DEBUG'       , 
-                    filename        : str   = 'logger.log'  , 
-                    to_log          : bool  = True
-                 ):
-        import logging
-        check_sudo()
-
-        self._logger_dict = { 'CRITICAL' : 50 , 'ERROR' : 40 , 'WARNING' : 30 , 'INFO' : 20 , 'DEBUG' : 10}
-
-        self._logger_formatter = logging.Formatter('%(asctime)s : %(module)s : %(threadName)s : %(levelname)s : %(funcName)s : %(message)s')
-
-        #creating a logger for transactions
-        self.logger_transaction = logging.getLogger(logger_name)
-        self.logger_transaction.setLevel(self._logger_dict[logging_level])
-
-        self._logger_transaction_file_handler = logging.FileHandler(filename = filename , mode='w')
-        self._logger_transaction_file_handler.setFormatter(self._logger_formatter)
-
-        self.logger_transaction.addHandler(self._logger_transaction_file_handler)
-
-        #log master
-        self.to_log = to_log
-        #create log header
-        self.logger_transaction.info("log file")
-
-    def log(self ,msg : str):
-        if self.to_log :
-            self.logger_transaction.debug(msg)
-
 def sync_me ( sync_lock_upperbound : float = (10 ** (-4) ) , verbose : bool = True ):
     offset = float(1000.0)
     while ( abs(offset) > sync_lock_upperbound ) :

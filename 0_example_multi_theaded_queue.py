@@ -4,7 +4,7 @@ import time
 import logging
 import random
 import queue as Queue
-from utils import LogIt
+from cl_utils import LogIt
 
 logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='queue.log',to_log=True)
 
