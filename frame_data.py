@@ -92,6 +92,24 @@ def extract_frame_type(byte_data):
 
     return FRAME_TYPES_NUM_TO_STR[frame_type_num]
 
+def _int2frasec(frasec_int):
+
+    tq = frasec_int >> 24
+    leap_dir = tq & 0b01000000
+    leap_occ = tq & 0b00100000
+    leap_pen = tq & 0b00010000
+
+    time_quality = tq & 0b00001111
+
+    # Reassign values to create Command frame
+    leap_dir = "-" if leap_dir else "+"
+    leap_occ = bool(leap_occ)
+    leap_pen = bool(leap_pen)
+
+    fr_seconds = frasec_int & (2**23-1)
+
+    return fr_seconds, leap_dir, leap_occ, leap_pen, time_quality
+
 class CommonFrame():
     def __init__(   self , 
                     frame_type : str = 'data',
@@ -101,17 +119,22 @@ class CommonFrame():
                     version    : int = 1 
                     ):
         self.set_frame_type(frame_type_str = frame_type)
+        self.set_version(version = version )
+        self.set_id_code(id_code = pmu_id_code)
+
+        if soc or frasec:
+            self.set_time(soc, frasec)
     
     def set_frame_type(self, frame_type_str : str = 'data'):
-        if frame_type not in self.FRAME_TYPES_STR_TO_NUM :
+        if frame_type not in FRAME_TYPES_STR_TO_NUM :
             raise FrameError("Unknown frame type. Possible options: [data, header, cfg1, cfg2, cfg3, cmd].")
         else:
-            self._frame_type_num = self.FRAME_TYPES_STR_TO_NUM[frame_type_str]
+            self._frame_type_num = FRAME_TYPES_STR_TO_NUM[frame_type_str]
 
     def get_frame_type(self):
         return self._frame_type_num
 
-    def set_version(self, version):
+    def set_version(self, version : int = 1 ):
         '''
             set version only 4 bits allowed to enter
         '''
@@ -124,13 +147,13 @@ class CommonFrame():
         return self._version
 
     def set_id_code(self, id_code):
-    '''
-    * ``id_code`` **(int)** - Should be number between ``1`` and ``65534``.
-    '''
-    if not 1 <= id_code <= 65534:
-        raise FrameError("ID CODE out of range. 1 <= ID_CODE <= 65534")
-    else:
-        self._pmu_id_code = id_code
+        '''
+        * ``id_code`` **(int)** - Should be number between ``1`` and ``65534``.
+        '''
+        if not 1 <= id_code <= 65534:
+            raise FrameError("ID CODE out of range. 1 <= ID_CODE <= 65534")
+        else:
+            self._pmu_id_code = id_code
 
     def get_id_code(self):
         return self._pmu_id_code
@@ -154,7 +177,6 @@ class CommonFrame():
             #24 bit allowed
             self.set_frasec(int ( ( t - int(t) ) * (10 ** 6) ) ) 
 
-
     def set_soc(self, soc):
         '''
         provide current soc value shoule be less than 2 ** 32 - 1
@@ -164,7 +186,123 @@ class CommonFrame():
         else:
             self._soc = soc
 
+    def get_soc(self):
+        return self._soc
 
+    def set_frasec(self, fr_seconds     : int   = 0     , 
+                         leap_dir       : str   = "+"   , 
+                         leap_occ       : bool  = False , 
+                         leap_pen       : bool  = False , 
+                         time_quality   : int   = 0 
+                  ):
+        """
+        **Params:**
+        *    ``leap_dir`` **(char)** - Leap Second Direction: ``+`` for add (``0``), ``-`` for
+             delete (``1``).
+             Default value: ``+``.
+        *    ``leap_occ`` **(bool)** - Leap Second Occurred: ``True`` in the first second after
+             the leap second occurs and remains set for 24h.
+        *    ``leap_pen`` **(bool)** - Leap Second Pending: ``True`` not more than 60 s nor less
+             than 1 s before a leap second occurs, and cleared in the second after the leap
+             second occurs.
+        *    ``time_quality`` **(int)** - Message Time Quality represents worst-case clock
+             accuracy according to UTC. Table below shows code values. Should be between ``0``
+             and ``15``.
+        __________________________________________________________________________________________
+            +------------+----------+---------------------------+
+            |  Binary    |  Decimal |           Value           |
+            +------------+----------+---------------------------+
+            | 1111       |    15    | Fault - clock failure.    |
+            +------------+----------+---------------------------+
+            | 1011       |    11    | Time within 10s of UTC.   |
+            +------------+----------+---------------------------+
+            | 1010       |    10    | Time within 1s of UTC.    |
+            +------------+----------+---------------------------+
+            | 1001       |    9     | Time within 10^-1s of UTC.|
+            +------------+----------+---------------------------+
+            | 1000       |    8     | Time within 10^-2s of UTC.|
+            +------------+----------+---------------------------+
+            | 0111       |    7     | Time within 10^-3s of UTC.|
+            +------------+----------+---------------------------+
+            | 0110       |    6     | Time within 10^-4s of UTC.|
+            +------------+----------+---------------------------+
+            | 0101       |    5     | Time within 10^-5s of UTC.|
+            +------------+----------+---------------------------+
+            | 0100       |    4     | Time within 10^-6s of UTC.|
+            +------------+----------+---------------------------+
+            | 0011       |    3     | Time within 10^-7s of UTC.|
+            +------------+----------+---------------------------+
+            | 0010       |    2     | Time within 10^-8s of UTC.|
+            +------------+----------+---------------------------+
+            | 0001       |    1     | Time within 10^-9s of UTC.|
+            +------------+----------+---------------------------+
+            | 0000       |    0     | Clock locked to UTC.      |
+            +------------+----------+---------------------------+
+        """
+
+        if not 0 <= fr_seconds <= 16777215:
+            raise FrameError("Frasec out of range. 0 <= FRASEC <= 16777215 ")
+
+        if (not 0 <= time_quality <= 15) or (time_quality in [12, 13, 14]):
+            raise FrameError("Time quality flag out of range. 0 <= MSG_TQ <= 15")
+
+        if leap_dir not in ["+", "-"]:
+            raise FrameError("Leap second direction must be '+' or '-'")
+
+        frasec = 1 << 1  # Bit 7: Reserved for future use. Not important but it will be 1 for easier byte forming.
+
+        if leap_dir == "-":  # Bit 6: Leap second direction [+ = 0] and [- = 1].
+            frasec |= 1
+
+        frasec <<= 1
+
+        if leap_occ:  # Bit 5: Leap Second Occurred, 1 in first second after leap second, remains 24h.
+            frasec |= 1
+
+        frasec <<= 1
+
+        if leap_pen:  # Bit 4: Leap Second Pending - shall be 1 not more then 60s nor less than 1s before leap second.
+            frasec |= 1
+
+        frasec <<= 4  # Shift left 4 bits for message time quality
+
+        # Bit 3 - 0: Message Time Quality indicator code - integer representation of bits (check table).
+        frasec |= time_quality
+
+        mask = 1 << 7  # Change MSB to 0 for standard compliance.
+        frasec ^= mask
+
+        frasec <<= 24  # Shift 24 bits for fractional time.
+
+        frasec |= fr_seconds  # Bits 23-0: Fraction of second.
+
+        self._frasec = frasec
+
+    def get_frasec(self):
+        return _int2frasec(self._frasec)
+
+class DataFrame(CommonFrame):
+    def __init__(self, pmu_id_code : int, stat : list , phasors, freq, dfreq, analog, digital, cfg, soc=None, frasec=None):
+        # Common frame for Configuration frame 2 with PMU simulator ID CODE which sends configuration frame.
+        CommonFrame.__init__(frame_type='data',pmu_id_code=pmu_id_code , soc=soc , fracsec=fracsec)
+
+        self.set_stat(stat)
+        self.set_phasors(phasors)
+        self.set_freq(freq)
+        self.set_dfreq(dfreq)
+        self.set_analog(analog)
+        self.set_digital(digital)
+    
+
+    def set_stat(self, stat):
+
+        if isinstance(stat, tuple):
+            self._stat = DataFrame._stat2int(*stat)
+        else:
+            if not 0 <= stat <= 65536:
+                raise ValueError("STAT out of range. 0 <= STAT <= 65536")
+            else:
+                self._stat = stat
 
 class FrameError(BaseException):
     pass
@@ -274,6 +412,3 @@ def frame_data_build(
                             CHK                 
                         )
     return packet
-
-x = frame_data_build()
-i = _check_crc(x)
