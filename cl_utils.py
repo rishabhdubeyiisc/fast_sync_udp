@@ -43,14 +43,17 @@ class db_client_cls:
                     IFhost = "localhost"    , 
                     IFport = 8086           , 
                     IFDbname = 'CPU'        , 
-                    logging_level = 'DEBUG'
+                    logging_level = 'DEBUG' ,
+                    to_log        = False   
                 ):
-        self.logger = LogIt(     
-                                logger_name = __name__ , 
+        '''
+        self.logger = LogIt(    
+                                logger_name = "db_client_cls" , 
                                 logging_level = logging_level , 
-                                filename= (__name__ + str(".log") ) ,
+                                filename= ("db_client_cls.log" ) ,
                                 to_log=to_log
                             )
+        '''
         self.IFhost = IFhost
         self.IFport = IFport
         self.IFDbname = IFDbname
@@ -111,8 +114,8 @@ class Thread_safe_queue():
         '''
         import queue as Queue
         import logging
-        from utils import LogIt
-        self.logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='queue.log',to_log=to_log_queue)
+        from cl_utils import LogIt
+        #self.logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='queue.log',to_log=to_log_queue)
         self.q = Queue.Queue(BUF_SIZE)
         self.to_log = to_log_queue
 

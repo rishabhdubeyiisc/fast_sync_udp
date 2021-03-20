@@ -58,6 +58,7 @@ def main(pmu : Pmu_Client):
               soc= SOC ,
               frasec= FRASEC
               )
+        payload = payload.convert2bytes()
         pack_time_end = time()
         print(pack_time_end - pack_time_start)
         #send to PDC
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     IP_of_PDC       = '10.64.37.35'
     PDC_port_open   = 9991
     buffer          = 1024
-    initial_lock =   2.6 * (10**(-5)) # 10 us
+    initial_lock =   2.6 * (10**(-4)) # 10 us
     sync_lock_precision = (10**(-4)) # 0.1 ms
     '''
     cl_comm
