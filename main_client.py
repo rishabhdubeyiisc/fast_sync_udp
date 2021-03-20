@@ -38,7 +38,8 @@ ieee_data_sample = DataFrame(   12345 ,
 def main(pmu : Pmu_Client):
     pack_time_start = 0
     pack_time_end = 0
-    while True :
+    packet_num = 0
+    while packet_num < 10 :
         #create payload
         ct = time() + pmu.get_time_offset()
         SOC = int(ct)
@@ -66,6 +67,7 @@ def main(pmu : Pmu_Client):
         #recv from pdc
         data_recv = pmu.recv_frm_PDC()
         print ("Server says " + str (data_recv.decode('utf-8')))
+        packet_num = packet_num + 1
 
 if __name__ == "__main__":
     check_sudo()
