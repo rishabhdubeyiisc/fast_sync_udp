@@ -2,7 +2,7 @@
 from influxdb import InfluxDBClient
 import datetime
 import pytz
-
+from utils import check_sudo
 class LogIt():
     def __init__(   self , 
                     logger_name     : str   = 'logger'      , 
@@ -18,42 +18,44 @@ class LogIt():
         self._logger_formatter = logging.Formatter('%(asctime)s : %(module)s : %(threadName)s : %(levelname)s : %(funcName)s : %(message)s')
 
         #creating a logger for transactions
-        self.logger_transaction = logging.getLogger(logger_name)
-        self.logger_transaction.setLevel(self._logger_dict[logging_level])
+        self.logger = logging.getLogger(logger_name)
+        self.logger.setLevel(self._logger_dict[logging_level])
 
-        self._logger_transaction_file_handler = logging.FileHandler(filename = filename , mode='w')
-        self._logger_transaction_file_handler.setFormatter(self._logger_formatter)
+        self._logger_file_handler = logging.FileHandler(filename = filename , mode='w')
+        self._logger_file_handler.setFormatter(self._logger_formatter)
 
-        self.logger_transaction.addHandler(self._logger_transaction_file_handler)
+        self.logger.addHandler(self._logger_file_handler)
 
         #log master
         self.to_log = to_log
         #create log header
-        self.logger_transaction.info("log file")
+        self.logger.info("log file")
 
     def log(self ,msg : str):
         if self.to_log :
-            self.logger_transaction.debug(msg)
+            self.logger.debug(msg)
     
     def log_info (self ,msg : str):
-        self.logger_transaction.info(msg)
+        self.logger.info(msg)
 
 class db_client_cls:
+    _counter = int(0)
     def __init__(   self, 
-                    IFhost = "localhost"    , 
-                    IFport = 8086           , 
-                    IFDbname = 'CPU'        , 
-                    logging_level = 'DEBUG' ,
-                    to_log        = False   
+                    IFhost          : str = "localhost" , 
+                    IFport          : int = 8086        , 
+                    IFDbname        : str = 'CPU'       , 
+                    logging_level   : str = 'DEBUG'     ,
+                    to_log          : bool = False   
                 ):
-        '''
+        db_client_cls._counter += 1
+        self._instance_id = db_client_cls._counter 
         self.logger = LogIt(    
-                                logger_name = "db_client_cls" , 
+                                logger_name = ( "db_cl_" + IFDbname + ".log"), 
                                 logging_level = logging_level , 
-                                filename= ("db_client_cls.log" ) ,
+                                filename= ("db_cl_" + str(db_client_cls._counter) +"_" + IFDbname + ".log") ,
                                 to_log=to_log
                             )
-        '''
+        
         self.IFhost = IFhost
         self.IFport = IFport
         self.IFDbname = IFDbname
@@ -65,6 +67,9 @@ class db_client_cls:
         if (to_run_script.lower() != 'y'):
             exit(-99)
         self.swtich_to_DB()
+        #info logs
+        self.logger.log_info( f"Host , Port : {self.IFhost} - {self.IFport} ")
+        self.logger.log_info( f"DB_source_Name : {self.IFDbname} ")
 
     def create_DB_by_name(self ):
         self.client.create_database(self.IFDbname)
@@ -115,9 +120,10 @@ class Thread_safe_queue():
         import queue as Queue
         import logging
         from cl_utils import LogIt
-        #self.logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='queue.log',to_log=to_log_queue)
+        self.logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='queue.log',to_log=to_log_queue)
         self.q = Queue.Queue(BUF_SIZE)
         self.to_log = to_log_queue
+        self.logger.log_info(__name__)
 
     def put_in_queue(self , item):
         if not self.q.full():
