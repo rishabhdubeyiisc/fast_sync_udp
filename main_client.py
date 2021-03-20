@@ -93,7 +93,7 @@ if __name__ == "__main__":
                             IP_to_send          =   IP_of_PDC       ,
                             port_to_send        =   PDC_port_open   ,
                             buffer              =   buffer          ,
-                            trans_logging_level =   'INFO'          ,
+                            trans_logging_level =   'DEBUG'          ,
                             to_log_trans        =   True            ,
                             ntp_server_sync     =   True            ,
                             set_deamon          =   False           ,

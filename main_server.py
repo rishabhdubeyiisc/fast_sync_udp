@@ -47,14 +47,14 @@ def main(   th_Q        : TH_Queue              ,
             db_end_time = time()
             '''
             #push to queue
-            
+            '''
             db_start_time = time()
             entry = pmu34_db.create_me_json(measurement='comm_delay',
                         tag_name='pmu_34',tag_field='fracsec_diff',
                         field_name='pdc_pmu_diff',field_value=FRASEC_diff)
             th_Q.put_in_queue(item = entry)
             db_end_time = time()
-            
+            '''
             #send
             sqn_num = sqn_num + 1
             msg = str(sqn_num)
