@@ -39,7 +39,6 @@ CRC16_XMODEM_TABLE = [
     0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0,
 ]
 
-
 def _crc16(data, crc, table):
     """Calculate CRC16 using the given table.
     `data`      - data for calculating CRC, must be bytes
@@ -60,7 +59,6 @@ def crc16xmodem(data, crc=0):
     """
     return _crc16(data, crc, CRC16_XMODEM_TABLE)
 
-
 class CommonFrame(object):
     def __init__(self,
                 frame_type      : str = 'data'  ,
@@ -71,7 +69,7 @@ class CommonFrame(object):
                 ):
         self.set_frame_type(frame_type)
         self.set_version(ieee_version)
-        self.set_id_code(pmu_id_code)
+        self.set_id_code(id_code)
 
         if soc or frasec:
             self.set_time(soc = soc, frasec = fracsec)
@@ -236,7 +234,7 @@ class CommonFrame(object):
         return _int2frasec(self._frasec)
     
     def build(self , byte_message : bytes = "start".encode('utf-8') ):
-        return CommonFrame.convert2bytes(byte_message=byte_message)
+        return self.convert2bytes(byte_message=byte_message)
     
     @staticmethod
     def _int2frasec(frasec_int) -> (int , str , bool , bool , int):
@@ -267,7 +265,6 @@ class CommonFrame(object):
 
         return True
     
-    @staticmethod
     def convert2bytes(self, byte_message):
 
         # SYNC word in CommonFrame starting with AA hex word + frame type + version
