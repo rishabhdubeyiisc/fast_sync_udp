@@ -267,7 +267,7 @@ class CommonFrame(object):
 
         return True
     
-    @abstractmethod
+    @staticmethod
     def convert2bytes(self, byte_message):
 
         # SYNC word in CommonFrame starting with AA hex word + frame type + version
