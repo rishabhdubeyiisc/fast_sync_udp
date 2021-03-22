@@ -235,7 +235,7 @@ class CommonFrame(object):
         '''
         return _int2frasec(self._frasec)
     
-    def build(self , byte_message="start".encode('utf-8') : bytes ):
+    def build(self , byte_message : bytes = "start".encode('utf-8') ):
         return CommonFrame.convert2bytes(byte_message=byte_message)
     
     @staticmethod
