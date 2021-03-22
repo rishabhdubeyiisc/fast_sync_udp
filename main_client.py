@@ -8,7 +8,7 @@ from utils import sync_me
 from utils import check_sudo
 from frame import DataFrame
 from frame import ConfigFrame2
-
+from frame_common import CommonFrame
 data_rate=30
 
 ieee_cfg2_sample = ConfigFrame2(12345, 1000000, 1, "Station A", 7734, (False, False, True, False),
@@ -69,6 +69,29 @@ def main(pmu : Pmu_Client):
         print ("Server says " + str (data_recv.decode('utf-8')))
         packet_num = packet_num + 1
 
+
+def send_common_frame(pmu : Pmu_Client):
+    pack_time_start = 0
+    pack_time_end = 0
+    packet_num = 0
+    while packet_num < 10 :
+        #create payload
+        ct = time() + pmu.get_time_offset()
+        SOC = int(ct)
+        FRASEC = int (  (ct - SOC) * (10**6) )
+        # pack time calc
+        pack_time_start = time()
+        payload = CommonFrame(ieee_version=3 , soc= SOC , fracsec=FRASEC)
+        payload.build()
+        pack_time_end = time()
+        print(pack_time_end - pack_time_start)
+        #send to PDC
+        pmu.send_to_PDC(payload)
+        #recv from pdc
+        data_recv = pmu.recv_frm_PDC()
+        print ("Server says " + str (data_recv.decode('utf-8')))
+        packet_num = packet_num + 1
+    
 if __name__ == "__main__":
     check_sudo()
 
@@ -106,4 +129,4 @@ if __name__ == "__main__":
                         )
 
     #game
-    main(pmu_c1)
+    send_common_frame(pmu_c1)
