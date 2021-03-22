@@ -70,7 +70,7 @@ class CommonFrame(object):
                 fracsec         : int = 0              
                 ):
         self.set_frame_type(frame_type)
-        self.set_version(version)
+        self.set_version(ieee_version)
         self.set_id_code(pmu_id_code)
 
         if soc or frasec:
