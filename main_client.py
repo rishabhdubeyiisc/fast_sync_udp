@@ -80,8 +80,8 @@ def send_common_frame(pmu : Pmu_Client):
         FRASEC = int (  (ct - SOC) * (10**6) )
         # pack time calc
         pack_time_start = time()
-        payload = CommonFrame(ieee_version=3 , soc= SOC , fracsec=FRASEC)
-        payload.build()
+        frame = CommonFrame(ieee_version=3 , soc= SOC , fracsec=FRASEC)
+        payload = frame.build()
         pack_time_end = time()
         print(pack_time_end - pack_time_start)
         #send to PDC
