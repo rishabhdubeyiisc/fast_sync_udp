@@ -15,7 +15,6 @@ lis = [TIME_FLAGS, TIME_QUALITY ]
 TIME_MSG = bytes(lis) 
 #TIME_MSG = 0b00100101
 from frame import ConfigFrame2
-from frame_data import extract_frame_type
 from frame import DataFrame
 
 data_rate=30
@@ -126,6 +125,57 @@ def upload_func(pmu34_db    : db_client , th_Q : TH_Queue):
         #import time
         #time.sleep(1.0)
 
+def recv_data_frame(   th_Q        : TH_Queue              ,
+            pmu34_db    : db_client             , 
+            pdc         : PDC_server            , 
+            pmu_IP      : str = '10.64.37.34'   , 
+            pmu_port    : int = 12345               
+        ):
+    sqn_num = int(0)
+    try :
+        while True:
+            #recv
+            loop_start_time = time()
+            data_recvd , addr_of_client = pdc.recv()
+            #
+            server_ct = time()
+            SOC_server = int(server_ct)
+            FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
+
+            #print(DataFrame.extract_frame_type(data_recvd))
+            frame = DataFrame.convert2frame(data_recvd,ieee_cfg2_sample)
+            #print(frame)
+            SOC_Client = frame.get_soc()
+            FRASEC_Client = frame.get_frasec()[0]
+            print(SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_server - FRASEC_Client )
+            #store over db
+            '''
+            db_start_time = time()
+            entry = pmu34_db.create_me_json(measurement='comm_delay',
+                                    tag_name='pmu_34',tag_field='fracsec_diff',
+                                    field_name='pdc_pmu_diff',field_value=FRASEC_diff)
+            pmu34_db.write_to_db(data_json=entry,verbose_mode=False)
+            db_end_time = time()
+            '''
+            #push to queue
+            '''
+            db_start_time = time()
+            entry = pmu34_db.create_me_json(measurement='comm_delay',
+                        tag_name='pmu_34',tag_field='fracsec_diff',
+                        field_name='pdc_pmu_diff',field_value=FRASEC_diff)
+            th_Q.put_in_queue(item = entry)
+            db_end_time = time()
+            '''
+            #send
+            sqn_num = sqn_num + 1
+            msg = str(sqn_num)
+            pdc.send_to(pmu_IP=addr_of_client[0] , pmu_port=addr_of_client[1] , payload = msg.encode() )
+            loop_end_time = time()
+
+            #print( (loop_end_time-loop_start_time) , (db_end_time - db_start_time) , ((loop_end_time-loop_start_time) / (db_end_time - db_start_time)) )
+    
+    except KeyboardInterrupt :
+        print("exited by user")
 
 
 def recv_common_frame(   th_Q        : TH_Queue              ,
@@ -226,4 +276,4 @@ if __name__ == "__main__":
     
     
     #debug func
-    recv_common_frame( th_Q = th_Q , pdc = PDC , pmu_IP= pmu_IP  , pmu_port= port_opening , pmu34_db=pmu34_db )
+    recv_data_frame( th_Q = th_Q , pmu34_db = pmu34_db , pdc = PDC ,pmu_IP = pmu_IP,pmu_port = 12345)

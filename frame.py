@@ -1959,6 +1959,8 @@ class DataFrame(CommonFrame):
                        "frequency_high_or_log": 4, "df/dt_high": 5, "reserved": 6, "digital": 7 }
     TRIGGER_REASON_WORDS = { code: word for word, code in TRIGGER_REASON.items() }
 
+    def __str__(self):
+        return str(self.get_stat())
 
     def __init__(self, pmu_id_code, stat, phasors, freq, dfreq, analog, digital, cfg, soc=None, frasec=None):
 
