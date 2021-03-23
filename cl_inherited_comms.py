@@ -13,6 +13,9 @@ from time import sleep as time_sleep
 from utils import get_my_ipv4
 from utils import time_sync
 from utils import check_sudo
+from utils import run_cmd
+from utils import get_ifaces
+from utils import ptp_time_sync
 #classes
 class base(object):
     def __init__(   self
@@ -104,7 +107,7 @@ class log_sync(base):
             #create log header
             self.logger_sync.info("sync file")
 
-class syncer(log_sync):
+class ntp_syncer(log_sync):
     def __init__(   self,
                     ntp_server_sync     : bool  = True          ,
                     set_deamon          : bool  = False         ,
@@ -175,7 +178,79 @@ class syncer(log_sync):
         sync_deamon_PR = multiprocessing.Process(target=self.sync_func )
         sync_deamon_PR.start()
 
-class Pmu_Client(syncer, log_trans):
+class ptp_syncer(log_sync):
+    def __init__(   self,
+                    ptp_server_sync     : bool  = True          ,
+                    set_deamon          : bool  = False         ,
+                    ptp_sync_wait       : float = 30.0          ,
+                    to_log_syncer       : bool  = True          ,
+                    sync_logging_level  : str   = 'DEBUG'       
+                ):
+        log_sync.__init__(  self , 
+                            to_log_syncer       = to_log_syncer , 
+                            sync_logging_level  = sync_logging_level
+                         )
+                
+        self.time_offset            = float(0.0)
+        self.ptp_sync_wait          = ptp_sync_wait
+        self.set_deamon             = set_deamon
+
+
+        self.logger_sync.info("to_log_syncer : {} ".format(to_log_syncer))        
+        self.logger_sync.info("sync_logging_level : {} ".format(sync_logging_level))        
+        self.logger_sync.info("ptp_server_sync : {} ".format(self.ptp_server_sync))
+        self.logger_sync.info("ptp_sync_wait : {} ".format(self.ptp_sync_wait))
+        self.logger_sync.info("iface : {} ".format(self.iface))
+        
+        self.iface = self.get_eth_face()[1]
+
+        self.process_id = run_cmd("ptp4l -S -i " + self.iface + " &")
+        
+        if ptp_server_sync:
+            self.sync_deamon()
+
+    def __del__(self):
+        run_cmd("kill -9 " + self.process_id)
+
+
+    def get_eth_face(self)->(bool , str):
+        '''
+        return (found_status : bool , iface_name : str )
+        '''
+        ifaces = get_ifaces()
+        for iface in ifaces :
+            if 'e' in iface :
+                return True , iface
+        raise PTP_exception("ERR : No valid iface for PTP sync")
+        return False , "0xDEAD"
+    
+    def get_time_offset (self):
+        return self.time_offset
+
+    def sync_func(self ):
+        while( True ):
+            actual_time_offset = ptp_time_sync()
+        
+            if(self.to_log_syncer):
+                self.logger_sync.debug(' __sync_func__ actual_time_offset : {} '.format(actual_time_offset) )
+            
+            self.time_offset   = actual_time_offset
+            #change this sleep pattern
+            time_sleep(self.ntp_sync_wait)
+
+    def sync_deamon(self):
+        self.logger_sync.info('__sync_deamon__ : started')
+        '''
+        sync_deamon_TH = Thread( target = self.sync_func )
+        sync_deamon_TH.setDaemon(self.set_deamon)
+        sync_deamon_TH.start()
+        '''
+        sync_deamon_PR = multiprocessing.Process(target=self.sync_func )
+        sync_deamon_PR.start()
+
+
+
+class Pmu_Client(ntp_syncer, log_trans):
     def __init__(   self ,
                     IP_to_send          : str   = '10.64.37.35' , 
                     port_to_send        : int   = 12345         , 
@@ -325,3 +400,5 @@ class PDC_server(log_trans):
         #send
         pass
 
+class PTP_exception(BaseException):
+    pass

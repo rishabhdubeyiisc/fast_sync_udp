@@ -102,3 +102,29 @@ def sync_me ( sync_lock_upperbound : float = (10 ** (-4) ) , verbose : bool = Tr
         if verbose :
             print("sync_lock_upperbound : {} , offset : {} ".format(sync_lock_upperbound , offset))
     return offset
+
+def get_ifaces()->list:
+    '''
+    -> list
+    return all ifaces except lo
+    '''
+    return_string = run_cmd("ls /sys/class/net/")
+    iface_list = return_string.split()
+    return_list = []
+    for iface in iface_list :
+        if iface != 'lo':
+            return_list.append(iface)
+    return return_list
+
+def ptp_time_sync()->float:
+    '''
+    return time from master in seconds
+    '''
+    cmd = "pmc -u -b 0 'GET CURRENT_DATA_SET'"
+    return_str = run_cmd(cmd)
+    return_ls  = return_str.split('\n')
+    time_str = return_ls[3]
+    time_from_master = time_str.split()[1]
+    time_from_master_ns = float(time_from_master)
+    time_from_master_s  = time_from_master_ns / (10**9)
+    return time_from_master_s
