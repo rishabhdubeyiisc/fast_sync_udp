@@ -16,6 +16,7 @@ TIME_MSG = bytes(lis)
 #TIME_MSG = 0b00100101
 from frame import ConfigFrame2
 from frame_data import extract_frame_type
+from frame import DataFrame
 
 data_rate=30
 ieee_cfg2_sample = ConfigFrame2(12345, 1000000, 1, "Station A", 7734, (False, False, True, False),
@@ -141,15 +142,16 @@ def recv_common_frame(   th_Q        : TH_Queue              ,
             data_recvd , addr_of_client = pdc.recv()
             print(extract_frame_type(data_recvd))
             #
+            frame = DataFrame.convert2frame(data_recvd,ieee_cfg2_sample)
             server_ct = time()
             SOC_server = int(server_ct)
             FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 
-            SOC_Client = struct.unpack('!HHHIIHIIIIHHIIIHH',data_recvd)[3]
-            FRASEC_Client = struct.unpack('!HHHIIHIIIIHHIIIHH',data_recvd)[4]
-            FRASEC_diff = FRASEC_server - FRASEC_Client
-            SOC_diff = SOC_server - SOC_Client
-            print( SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_diff)
+            #SOC_Client = struct.unpack('!HHHIIHIIIIHHIIIHH',data_recvd)[3]
+            #FRASEC_Client = struct.unpack('!HHHIIHIIIIHHIIIHH',data_recvd)[4]
+            #FRASEC_diff = FRASEC_server - FRASEC_Client
+            #SOC_diff = SOC_server - SOC_Client
+            #print( SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_diff)
             #store over db
             '''
             db_start_time = time()

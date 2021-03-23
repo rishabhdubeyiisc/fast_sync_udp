@@ -7,7 +7,7 @@ class LogIt():
     def __init__(   self , 
                     logger_name     : str   = 'logger'      , 
                     logging_level   : str   = 'DEBUG'       , 
-                    filename        : str   = 'logger.log'  , 
+                    filename        : str   = 'log_logger.log'  , 
                     to_log          : bool  = True
                  ):
         import logging
@@ -52,7 +52,7 @@ class db_client_cls:
         self.logger = LogIt(    
                                 logger_name = ( "db_cl_" + IFDbname + ".log"), 
                                 logging_level = logging_level , 
-                                filename= ("db_cl_" + str(db_client_cls._counter) +"_" + IFDbname + ".log") ,
+                                filename= ("log_db_cl_" + str(db_client_cls._counter) +"_" + IFDbname + ".log") ,
                                 to_log=to_log
                             )
         
@@ -120,7 +120,7 @@ class Thread_safe_queue():
         import queue as Queue
         import logging
         from cl_utils import LogIt
-        self.logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='queue.log',to_log=to_log_queue)
+        self.logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='log_queue.log',to_log=to_log_queue)
         self.q = Queue.Queue(BUF_SIZE)
         self.to_log = to_log_queue
         self.logger.log_info(__name__)

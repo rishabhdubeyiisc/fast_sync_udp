@@ -41,8 +41,8 @@ class Pmu_Client():
         #get own ip
         self.pmu_ip = get_my_ipv4()
         self.pmu_name = self.client_dict[self.pmu_ip]
-        self.log_file_name = str(self.pmu_name) + "_trans.log"
-        self.log_sync_file_name = str(self.pmu_name) + "_sync.log"
+        self.log_file_name = "log_" + str(self.pmu_name) + "_trans.log"
+        self.log_sync_file_name = "log_" + str(self.pmu_name) + "_sync.log"
         self.syncer_name = str(self.pmu_name) + "_syncer"
         #creating a logger for server
         self.logger_transaction = logging.getLogger(self.pmu_name)
@@ -154,7 +154,7 @@ class PDC_server():
         self.logger_transaction = logging.getLogger("PDC_server_trans")
         self.logger_transaction.setLevel(self.logger_dict[trans_logging_level])
 
-        self.logger_transaction_file_handler = logging.FileHandler('PDC_server.log',mode='w')
+        self.logger_transaction_file_handler = logging.FileHandler('log_PDC_server.log',mode='w')
         self.logger_transaction_file_handler.setFormatter(self.logger_formatter)
 
         self.logger_transaction.addHandler(self.logger_transaction_file_handler)
@@ -162,7 +162,7 @@ class PDC_server():
         self.logger_sync = logging.getLogger("PDC_server_syncer")
         self.logger_sync.setLevel(self.logger_dict[sync_logging_level])
 
-        self.logger_sync_file_handler = logging.FileHandler('PDC_server_sync.log',mode='w')
+        self.logger_sync_file_handler = logging.FileHandler('log_PDC_server_sync.log',mode='w')
         self.logger_sync_file_handler.setFormatter(self.logger_formatter)
 
         self.logger_sync.addHandler(self.logger_sync_file_handler)

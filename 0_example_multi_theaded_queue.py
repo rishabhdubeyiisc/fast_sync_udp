@@ -6,7 +6,7 @@ import random
 import queue as Queue
 from cl_utils import LogIt
 
-logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='queue.log',to_log=True)
+logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='log_queue.log',to_log=True)
 
 BUF_SIZE = 0
 q = Queue.Queue(BUF_SIZE)

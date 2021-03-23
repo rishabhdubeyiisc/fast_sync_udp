@@ -30,8 +30,8 @@ class base(object):
         #get own ip and name resolve
         self._pmu_ip     = get_my_ipv4()
         self._pmu_name   = self._ip_name_dict[self._pmu_ip]
-        self._log_file_name = str(self._pmu_name) + "_trans.log"
-        self._log_sync_file_name = str(self._pmu_name) + "_sync.log"
+        self._log_file_name = "log_" + str(self._pmu_name) + "_trans.log"
+        self._log_sync_file_name =  "log_" + str(self._pmu_name) + "_sync.log"
         self._syncer_name = str(self._pmu_name) + "_syncer"
     
     def get_name_from_ip(self):
