@@ -2,7 +2,6 @@
 from struct import pack as struct_pack
 from time import time
 
-from frame_data import frame_data_build
 from cl_inherited_comms import Pmu_Client
 from utils import sync_me
 from utils import check_sudo
