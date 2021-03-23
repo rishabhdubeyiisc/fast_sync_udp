@@ -112,7 +112,8 @@ class syncer(log_sync):
                     sync_lock_upperbound: float = (10**(-3))    ,
                     ntp_sync_wait       : float = 1.0           ,
                     to_log_syncer       : bool  = True          ,
-                    sync_logging_level  : str   = 'DEBUG'       
+                    sync_logging_level  : str   = 'DEBUG'       ,
+                    ntp_server          : str   = "10.64.37.35"
                 ):
         log_sync.__init__(  self , 
                             to_log_syncer       = to_log_syncer , 
@@ -126,18 +127,20 @@ class syncer(log_sync):
         self.ntp_sync_wait          = float(60.0)
         self.sync_lock_precision    = sync_lock_precision
         self.sync_lock_upperbound   = sync_lock_upperbound
-        self.set_deamon = set_deamon
+        self.set_deamon             = set_deamon
+        self.ntp_server             = ntp_server
         if ntp_server_sync:
             self.sync_deamon()
 
         self.logger_sync.info("sync_lock_precision : {} ".format(self.sync_lock_precision))
+        self.logger_sync.info("ntp_server : {} ".format(self.ntp_server))
 
     def get_time_offset (self):
         return self.time_offset
 
     def sync_func(self ):
         while( True ):
-            actual_time_offset = time_sync(verbose=False)
+            actual_time_offset = time_sync(verbose=False  , ntp_server = self.ntp_server )
         
             if(self.to_log_syncer):
                 self.logger_sync.debug(' __sync_func__ actual_time_offset : {} '.format(actual_time_offset) )
