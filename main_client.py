@@ -125,8 +125,10 @@ if __name__ == "__main__":
     IP_of_PDC       = '10.64.37.35'
     PDC_port_open   = 9991
     buffer          = 1024
+    '''
     initial_lock =   2.6 * (10**(-3)) # 10 us
     sync_lock_precision = (10**(-4)) # 0.1 ms
+    '''
     '''
     cl_comm
     pmu_c1 = Pmu_Client(IP_to_send          = IP_of_PDC,
@@ -139,8 +141,7 @@ if __name__ == "__main__":
                      trans_logging_level    ='DEBUG')
     '''
     #sync to server
-    sync_me(sync_lock_upperbound=initial_lock ,verbose=True)
-
+    '''
     pmu_c1 = Pmu_Client(
                             IP_to_send          =   IP_of_PDC       ,
                             port_to_send        =   PDC_port_open   ,
@@ -154,6 +155,23 @@ if __name__ == "__main__":
                             to_log_syncer       =   True            ,
                             sync_logging_level  =   'DEBUG'
                         )
-
+    '''
+    pmu_c1 = Pmu_Client( IP_to_send='127.0.0.1',
+            port_to_send=12345,
+            buffer=1024,
+            trans_logging_level='DEBUG',
+            to_log_trans=True,
+            
+            ntp_server = "10.64.37.35",
+            ntp_server_sync=False,
+            sync_lock_precision=(10**(-3)),
+            ntp_sync_wait=30, 
+            to_log_ntp_syncer=True,
+            ntp_sync_logging_level='DEBUG',
+            
+            ptp_server_sync=True ,
+            ptp_sync_wait=1.0, 
+            to_log_ptp_syncer=True,
+            ptp_sync_logging_level='DEBUG')
     #game
     send_data_frame(pmu_c1)

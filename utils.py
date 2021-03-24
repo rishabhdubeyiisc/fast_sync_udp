@@ -98,7 +98,7 @@ def ping_time(ip : str = '10.64.37.34')->float:
 def sync_me ( sync_lock_upperbound : float = (10 ** (-4) ) , verbose : bool = True ):
     offset = float(1000.0)
     while ( abs(offset) > sync_lock_upperbound ) :
-        offset = time_sync()
+        offset = ntp_time_sync()
         if verbose :
             print("sync_lock_upperbound : {} , offset : {} ".format(sync_lock_upperbound , offset))
     return offset
