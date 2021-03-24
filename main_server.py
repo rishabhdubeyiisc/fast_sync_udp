@@ -278,7 +278,7 @@ if __name__ == "__main__":
                     sync_logging_level     = 'DEBUG'     ,
 
                     ptp_server_sync    = True          ,
-                    ptp_sync_wait     = 1.0            ,
+                    ptp_sync_wait     = 0.001            ,
                     to_log_ptp_syncer   = True          ,
                     ptp_sync_logging_level = 'DEBUG'       
                  )
