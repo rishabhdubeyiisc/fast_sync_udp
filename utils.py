@@ -63,6 +63,19 @@ def check_sudo()->bool:
         return True
     else:
         print("not root.")
+        raise BaseException("Not Root")
+        exit(-1)
+        return False
+    
+def make_sudo()->bool:
+    '''
+    check for root if not found ask for password
+    '''
+    if os.geteuid() == 0:
+        print("root!")
+        return True
+    else:
+        print("not root.")
         subprocess.call(['sudo', 'python3', *sys.argv])
         sys.exit()
 
