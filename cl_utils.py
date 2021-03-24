@@ -3,6 +3,7 @@ from influxdb import InfluxDBClient
 import datetime
 import pytz
 from utils import check_sudo
+
 class LogIt():
     def __init__(   self , 
                     logger_name     : str   = 'logger'      , 

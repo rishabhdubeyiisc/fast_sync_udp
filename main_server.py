@@ -4,7 +4,6 @@ from time import time
 import threading
 import queue as Queue
 
-from cl_comm import PDC_server
 from cl_inherited_comms import PDC_server
 from cl_utils import db_client_cls as db_client
 from cl_utils import Thread_safe_queue as TH_Queue
