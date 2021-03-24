@@ -11,7 +11,7 @@ from time import sleep as time_sleep
 
 #my imports
 from utils import get_my_ipv4
-from utils import time_sync
+from utils import ntp_time_sync
 from utils import check_sudo
 from utils import run_cmd
 from utils import get_ifaces
@@ -110,7 +110,6 @@ class log_sync(base):
 class ntp_syncer(log_sync):
     def __init__(   self,
                     ntp_server_sync     : bool  = True          ,
-                    set_deamon          : bool  = False         ,
                     sync_lock_precision : float = (10**(-5))    ,
                     sync_lock_upperbound: float = (10**(-3))    ,
                     ntp_sync_wait       : float = 1.0           ,
@@ -130,7 +129,6 @@ class ntp_syncer(log_sync):
         self.ntp_sync_wait          = float(60.0)
         self.sync_lock_precision    = sync_lock_precision
         self.sync_lock_upperbound   = sync_lock_upperbound
-        self.set_deamon             = set_deamon
         self.ntp_server             = ntp_server
         if ntp_server_sync:
             self.sync_deamon()
@@ -141,9 +139,10 @@ class ntp_syncer(log_sync):
     def get_time_offset (self):
         return self.time_offset
 
-    def sync_func(self ):
+    def ntp_sync_func(self ):
+        print("\n\n\n ntp server : " + str(self.ntp_server))
         while( True ):
-            actual_time_offset = time_sync(verbose=False  , ntp_server = self.ntp_server )
+            actual_time_offset = ntp_time_sync(verbose=False  , ntp_server = self.ntp_server )
         
             if(self.to_log_syncer):
                 self.logger_sync.debug(' __sync_func__ actual_time_offset : {} '.format(actual_time_offset) )
@@ -175,13 +174,12 @@ class ntp_syncer(log_sync):
         sync_deamon_TH.setDaemon(self.set_deamon)
         sync_deamon_TH.start()
         '''
-        sync_deamon_PR = multiprocessing.Process(target=self.sync_func )
-        sync_deamon_PR.start()
+        sync_ntp_deamon_PR = multiprocessing.Process(target=self.ntp_sync_func )
+        sync_ntp_deamon_PR.start()
 
 class ptp_syncer(log_sync):
     def __init__(   self,
                     ptp_server_sync     : bool  = True          ,
-                    set_deamon          : bool  = False         ,
                     ptp_sync_wait       : float = 30.0          ,
                     to_log_syncer       : bool  = True          ,
                     sync_logging_level  : str   = 'DEBUG'       
@@ -191,27 +189,23 @@ class ptp_syncer(log_sync):
                             sync_logging_level  = sync_logging_level
                          )
                 
-        self.time_offset            = float(0.0)
-        self.ptp_sync_wait          = ptp_sync_wait
-        self.set_deamon             = set_deamon
-
+        self._time_offset            = float(0.0)
+        self._ptp_sync_wait          = ptp_sync_wait
+        self._ptp_server_sync        = ptp_server_sync
 
         self.logger_sync.info("to_log_syncer : {} ".format(to_log_syncer))        
         self.logger_sync.info("sync_logging_level : {} ".format(sync_logging_level))        
-        self.logger_sync.info("ptp_server_sync : {} ".format(self.ptp_server_sync))
-        self.logger_sync.info("ptp_sync_wait : {} ".format(self.ptp_sync_wait))
-        self.logger_sync.info("iface : {} ".format(self.iface))
+        self.logger_sync.info("ptp_server_sync : {} ".format(self._ptp_server_sync))
+        self.logger_sync.info("ptp_sync_wait : {} ".format(self._ptp_sync_wait))
         
-        self.iface = self.get_eth_face()[1]
-
-        self.process_id = run_cmd("ptp4l -S -i " + self.iface + " &")
+        self._iface = self.get_eth_face()[1]
+        self.logger_sync.info("iface : {} ".format(self._iface))
         
-        if ptp_server_sync:
-            self.sync_deamon()
-
-    def __del__(self):
-        run_cmd("kill -9 " + self.process_id)
-
+        if self._ptp_server_sync :
+            self._sync_deamon()
+    
+    def __str__(self):
+        return (f"PTP offset from master {self._time_offset}")
 
     def get_eth_face(self)->(bool , str):
         '''
@@ -225,58 +219,68 @@ class ptp_syncer(log_sync):
         return False , "0xDEAD"
     
     def get_time_offset (self):
-        return self.time_offset
+        return self._time_offset
 
-    def sync_func(self ):
+    def _ptp_sync_func(self ):
         while( True ):
             actual_time_offset = ptp_time_sync()
         
             if(self.to_log_syncer):
                 self.logger_sync.debug(' __sync_func__ actual_time_offset : {} '.format(actual_time_offset) )
             
-            self.time_offset   = actual_time_offset
+            self._time_offset   = actual_time_offset
             #change this sleep pattern
-            time_sleep(self.ntp_sync_wait)
+            time_sleep(self._ptp_sync_wait)
 
-    def sync_deamon(self):
+    def _sync_deamon(self):
         self.logger_sync.info('__sync_deamon__ : started')
-        '''
-        sync_deamon_TH = Thread( target = self.sync_func )
-        sync_deamon_TH.setDaemon(self.set_deamon)
-        sync_deamon_TH.start()
-        '''
-        sync_deamon_PR = multiprocessing.Process(target=self.sync_func )
-        sync_deamon_PR.start()
 
+        sync_ptp_deamon_TH = threading.Thread(target=self._ptp_sync_func )
+        sync_ptp_deamon_TH.setDaemon(True)
+        sync_ptp_deamon_TH.start()
 
-
-class Pmu_Client(ntp_syncer, log_trans):
+class Pmu_Client( log_trans , ptp_syncer):
     def __init__(   self ,
                     IP_to_send          : str   = '10.64.37.35' , 
                     port_to_send        : int   = 12345         , 
                     buffer              : int   = 1024          ,
                     trans_logging_level : str   = 'DEBUG'       ,
                     to_log_trans        : bool  = True          ,
+                    
+                    ntp_server          : str   = "10.64.37.35" ,
                     ntp_server_sync     : bool  = True          ,
-                    set_deamon          : bool  = False         , 
                     sync_lock_precision : float = (10 ** (-4))  ,
                     ntp_sync_wait       : float = 1.0           ,
-                    to_log_syncer       : bool  = True          ,
-                    sync_logging_level  : str   = 'DEBUG'        
+                    to_log_ntp_syncer   : bool  = True          ,
+                    ntp_sync_logging_level: str = 'DEBUG'       , 
+
+                    ptp_server_sync     : bool  = True          ,
+                    ptp_sync_wait       : float = 30            ,
+                    to_log_ptp_syncer   : bool  = True          ,
+                    ptp_sync_logging_level: str = 'DEBUG'       
                 ):
+        if (ntp_server_sync == True and ptp_server_sync == True):
+            raise Pmu_Client_exception(f"Both syncronization is not possible ntp_server_sync - {ntp_server_sync} , ptp_server_sync - {ptp_server_sync}")
         #inits
         log_trans.__init__( self, 
                             trans_logging_level =   trans_logging_level , 
                             to_log_trans        =   to_log_trans)
         
-        syncer.__init__(    self,
+        if ntp_server_sync :
+            ntp_syncer.__init__(    self,
                             ntp_server_sync     =   ntp_server_sync     , 
-                            set_deamon          =   set_deamon          , 
                             sync_lock_precision =   sync_lock_precision ,
                             ntp_sync_wait       =   ntp_sync_wait       ,
-                            to_log_syncer       =   to_log_syncer       ,
-                            sync_logging_level  =   sync_logging_level
-                        )
+                            to_log_syncer       =   to_log_ntp_syncer   ,
+                            sync_logging_level  =   ntp_sync_logging_level,
+                            ntp_server          =   ntp_server
+                            )
+        elif ptp_server_sync : 
+            ptp_syncer.__init__(self , 
+                                ptp_server_sync     = ptp_server_sync,
+                                ptp_sync_wait       = ptp_sync_wait,
+                                to_log_syncer       = to_log_ptp_syncer,
+                                sync_logging_level  = ptp_sync_logging_level)
 
         self.logger_transaction.info("instancing client begin : " + str(self.get_name_from_ip()))          
         #client
@@ -321,7 +325,7 @@ class Pmu_Client(ntp_syncer, log_trans):
         #recv
         pass
 
-class PDC_server(log_trans):
+class PDC_server(log_trans ,ptp_syncer):
     '''
         recv / send
     '''
@@ -336,23 +340,24 @@ class PDC_server(log_trans):
                     sync_lock_precision   : float = (10**(-4))  ,
                     ntp_sync_wait         : float = 1.0         ,
                     to_log_syncer         : bool  = True        ,
-                    sync_logging_level    : str   = 'DEBUG'
+                    sync_logging_level    : str   = 'DEBUG'     ,
+
+                    ptp_server_sync     : bool  = True          ,
+                    ptp_sync_wait       : float = 30            ,
+                    to_log_ptp_syncer   : bool  = True          ,
+                    ptp_sync_logging_level: str = 'DEBUG'       
                  ):
         log_trans.__init__( self , 
                             trans_logging_level =   trans_logging_level,
                             to_log_trans        =   to_log_trans
                           )
         
-        '''
-        syncer.__init__( self,
-                         ntp_server_sync        = ntp_server_sync       , 
-                         set_deamon             = set_deamon            ,
-                         sync_lock_precision    = sync_lock_precision   ,
-                         ntp_sync_wait          = ntp_sync_wait         ,
-                         to_log_syncer          = to_log_syncer         ,
-                         sync_logging_level     = sync_logging_level
-                        )
-        '''
+        ptp_syncer.__init__(self , 
+                    ptp_server_sync     = ptp_server_sync,
+                    ptp_sync_wait       = ptp_sync_wait,
+                    to_log_syncer       = to_log_ptp_syncer,
+                    sync_logging_level  = ptp_sync_logging_level)
+
         self.logger_transaction.info("instancing PDC_server @ {}".format( self.get_ip() ))
         #now server
         self.ip_server_is_binding   = ip_server_is_binding
@@ -402,3 +407,55 @@ class PDC_server(log_trans):
 
 class PTP_exception(BaseException):
     pass
+
+class Pmu_Client_exception(BaseException):
+    pass
+
+class PDC_server_exception(BaseException):
+    pass
+
+
+'''
+X = Pmu_Client( IP_to_send='127.0.0.1',
+            port_to_send=12345,
+            buffer=1024,
+            trans_logging_level='DEBUG',
+            to_log_trans=True,
+            
+            ntp_server = "10.64.37.35",
+            ntp_server_sync=False,
+            sync_lock_precision=(10**(-3)),
+            ntp_sync_wait=30, 
+            to_log_ntp_syncer=True,
+            ntp_sync_logging_level='DEBUG',
+            
+            ptp_server_sync=True ,
+            ptp_sync_wait=1.0, 
+            to_log_ptp_syncer=True,
+            ptp_sync_logging_level='DEBUG')
+
+Y = PDC_server (    ip_server_is_binding = '127.0.0.1' , 
+                    port_opening         = 12345       , 
+                    buffer_size          = 1024        ,
+                    trans_logging_level  = 'DEBUG'     ,
+                    to_log_trans      = True        ,
+                    ntp_server_sync         = True        , 
+                    set_deamon          = True        ,
+                    sync_lock_precision    = (10**(-4))  ,
+                    ntp_sync_wait        = 1.0         ,
+                    to_log_syncer         = True        ,
+                    sync_logging_level     = 'DEBUG'     ,
+
+                    ptp_server_sync    = True          ,
+                    ptp_sync_wait     = 1.0            ,
+                    to_log_ptp_syncer   = True          ,
+                    ptp_sync_logging_level = 'DEBUG'       
+                 )
+
+#print(X.get_time_offset())
+print(Y.get_time_offset())
+
+while True:
+    import time 
+    time.sleep(10)
+'''

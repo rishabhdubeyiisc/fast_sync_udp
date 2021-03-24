@@ -6,7 +6,7 @@ import time
 import subprocess
 import socket
 
-def time_sync(verbose : bool = False , ntp_server : str = "10.64.37.35") -> float:
+def ntp_time_sync(verbose : bool = False , ntp_server : str = "10.64.37.35") -> float:
     '''
     return float 
     return offset after syncing with server lagging then will return a value so that after adding in FRACSEC we are syncyed with server
