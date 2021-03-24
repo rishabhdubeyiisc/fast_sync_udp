@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-from utils import check_sudo
+from utils import make_sudo
 from utils import run_cmd
 
 def usage():
@@ -17,7 +17,7 @@ if (len(sys.argv) > 2):
         run_cmd('git config --global user.email "rishidd7devx2@gmail.com"')
         run_cmd('git config --global user.name "rishabhdubeyiisc"')
 
-is_sudo = check_sudo()
+is_sudo = make_sudo()
 
 run_cmd("chmod +x *.py")
 run_cmd("rm -r *.log")
