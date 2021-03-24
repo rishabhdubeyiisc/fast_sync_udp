@@ -250,6 +250,7 @@ if __name__ == "__main__":
     '''
     inherited
     '''
+    '''
     PDC = PDC_server(
                         ip_server_is_binding   = IP_to_bind    ,
                         port_opening           = port_opening  ,
@@ -263,6 +264,24 @@ if __name__ == "__main__":
                         to_log_syncer          = True          ,
                         sync_logging_level     = 'DEBUG'
                     )
+    '''
+    PDC = PDC_server (    ip_server_is_binding = IP_to_bind , 
+                    port_opening         = port_opening       , 
+                    buffer_size          = buffer_size        ,
+                    trans_logging_level  = 'DEBUG'     ,
+                    to_log_trans      = True        ,
+                    ntp_server_sync         = True        , 
+                    set_deamon          = True        ,
+                    sync_lock_precision    = (10**(-4))  ,
+                    ntp_sync_wait        = 1.0         ,
+                    to_log_syncer         = True        ,
+                    sync_logging_level     = 'DEBUG'     ,
+
+                    ptp_server_sync    = True          ,
+                    ptp_sync_wait     = 1.0            ,
+                    to_log_ptp_syncer   = True          ,
+                    ptp_sync_logging_level = 'DEBUG'       
+                 )
     #creating RT time series DB
     pmu34_db = db_client(IFDbname='PMU_34')
     #TODO create thread safe queue

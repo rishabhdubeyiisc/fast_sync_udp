@@ -156,9 +156,9 @@ if __name__ == "__main__":
                             sync_logging_level  =   'DEBUG'
                         )
     '''
-    pmu_c1 = Pmu_Client( IP_to_send='127.0.0.1',
-            port_to_send=12345,
-            buffer=1024,
+    pmu_c1 = Pmu_Client( IP_to_send=IP_of_PDC,
+            port_to_send=PDC_port_open,
+            buffer=buffer,
             trans_logging_level='DEBUG',
             to_log_trans=True,
             
