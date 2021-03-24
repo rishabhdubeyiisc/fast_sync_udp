@@ -8,6 +8,9 @@ from utils import check_sudo
 from frame import DataFrame
 from frame import ConfigFrame2
 from frame import CommonFrame
+
+MAX_16_BIT = (2**16 - 1)
+
 data_rate=30
 
 ieee_cfg2_sample = ConfigFrame2(12345, 1000000, 1, "Station A", 7734, (False, False, True, False),
@@ -38,7 +41,7 @@ def main(pmu : Pmu_Client):
     pack_time_start = 0
     pack_time_end = 0
     packet_num = 0
-    while packet_num < 10 :
+    while packet_num < MAX_16_BIT :
         #create payload
         ct = time() + pmu.get_time_offset()
         SOC = int(ct)
@@ -67,7 +70,6 @@ def main(pmu : Pmu_Client):
         data_recv = pmu.recv_frm_PDC()
         print ("Server says " + str (data_recv.decode('utf-8')))
         packet_num = packet_num + 1
-
 
 def send_common_frame(pmu : Pmu_Client):
     pack_time_start = 0
@@ -173,7 +175,7 @@ if __name__ == "__main__":
             ntp_sync_logging_level='DEBUG',
             
             ptp_server_sync=True ,
-            ptp_sync_wait=0.001, 
+            ptp_sync_wait=1.0, 
             to_log_ptp_syncer=True,
             ptp_sync_logging_level='DEBUG')
     #game

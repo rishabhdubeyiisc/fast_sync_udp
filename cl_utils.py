@@ -62,15 +62,15 @@ class db_client_cls:
         self.IFDbname = IFDbname
         #create a client
         self.client = InfluxDBClient(host=IFhost, port=IFport , database=IFDbname)
-        print("IFDbname : {}".format(self.IFDbname))
+        print("IFDbname -> {}".format(self.IFDbname))
         print(self.get_db_list())
-        to_run_script= input("press y/Y if DB created : ")
+        to_run_script= input("press y/Y if DB created -> ")
         if (to_run_script.lower() != 'y'):
             exit(-99)
         self.swtich_to_DB()
         #info logs
-        self.logger.log_info( f"Host , Port : {self.IFhost} - {self.IFport} ")
-        self.logger.log_info( f"DB_source_Name : {self.IFDbname} ")
+        self.logger.log_info( f"Host , Port -> {self.IFhost} - {self.IFport} ")
+        self.logger.log_info( f"DB_source_Name -> {self.IFDbname} ")
 
     def create_DB_by_name(self ):
         self.client.create_database(self.IFDbname)
@@ -86,7 +86,7 @@ class db_client_cls:
             print(data_json)
         is_data_wr = self.client.write_points(data_json)
         if(not is_data_wr):
-            print("ERR : data not written to DB" + ERR_str )
+            print("ERR -> data not written to DB" + ERR_str )
         return is_data_wr
 
     def write_list_to_db ( self , data_json_list ,batch_size , ERR_str = "", verbose_mode = True) -> bool:
@@ -94,7 +94,7 @@ class db_client_cls:
             print(data_json_list)
         is_data_wr = self.client.write_points(points=data_json_list,batch_size=batch_size)
         if(not is_data_wr):
-            print("ERR : data not written to DB" + ERR_str )
+            print("ERR -> data not written to DB" + ERR_str )
         return is_data_wr
 
     def create_me_json (self, 
@@ -130,7 +130,7 @@ class Thread_safe_queue():
         if not self.q.full():
             self.q.put(item)
             if self.to_log :
-                self.logger.log('Putting ' + str(item) + ' : ' + str(self.q.qsize()) + ' items in queue')
+                self.logger.log('Putting ' + str(item) + ' -> ' + str(self.q.qsize()) + ' items in queue')
 
     def remove_from_queue(self):
         '''
@@ -140,5 +140,5 @@ class Thread_safe_queue():
         if not self.q.empty():
             item = self.q.get()
             if self.to_log :
-                self.logger.log('Getting ' + str(item)  + ' : ' + str(self.q.qsize()) + ' items in queue')
+                self.logger.log('Getting ' + str(item)  + ' -> ' + str(self.q.qsize()) + ' items in queue')
         return item
