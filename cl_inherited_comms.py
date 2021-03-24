@@ -379,7 +379,7 @@ class PDC_server(log_trans ,ptp_syncer):
         self.logger_transaction.info( "ip_server_is_binding -> {}".format( self.ip_server_is_binding ) )
         self.logger_transaction.info( "port_opening -> {}".format( port_opening ) )
         self.logger_transaction.info( "buffer_size -> {}".format( buffer_size ) )
-        self.logger_transaction.info( "server_sock bind {}".format( (self.ip_server_is_binding,self.port_opening) ) )
+        self.logger_transaction.info( "server_sock bind -> {}".format( (self.ip_server_is_binding,self.port_opening) ) )
         self.logger_transaction.info( "begin time -> {}".format(time()))
 
 

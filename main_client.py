@@ -98,7 +98,7 @@ def send_data_frame(pmu : Pmu_Client):
     pack_time_end = 0
     packet_num = 0
     try :
-        while True :
+        while MAX_16_BIT :
             #create payload
             ct = time() + pmu.get_time_offset()
             SOC = int(ct)
