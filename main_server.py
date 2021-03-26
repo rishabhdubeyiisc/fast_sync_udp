@@ -228,7 +228,7 @@ def recv_common_frame(   th_Q        : TH_Queue              ,
 if __name__ == "__main__":
     IP_to_bind      = '10.64.37.35'
     port_opening    = 9991
-    pmu_IP          = '10.64.37.31'
+    pmu_IP          = '10.64.37.34'
     buffer_size     = 1024
     '''
     comm class
