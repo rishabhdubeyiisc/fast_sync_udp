@@ -100,7 +100,7 @@ def send_data_frame(pmu : Pmu_Client):
     
     loop_send_time  = int(time()) + 1    
     begin_send_time = int(time())
-    duration_in_sec = 10
+    duration_in_sec = 60 * 10
     while loop_send_time - begin_send_time < duration_in_sec :
         #create payload
         ct = time() + pmu.get_time_offset()

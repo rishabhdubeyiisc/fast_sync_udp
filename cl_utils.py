@@ -50,52 +50,50 @@ class db_client_cls:
                 ):
         db_client_cls._counter += 1
         self._instance_id = db_client_cls._counter 
-        self.logger = LogIt(    
+        self._logger = LogIt(    
                                 logger_name = ( "db_cl_" + IFDbname + ".log"), 
                                 logging_level = logging_level , 
                                 filename= ("log_db_cl_" + str(db_client_cls._counter) +"_" + IFDbname + ".log") ,
                                 to_log=to_log
                             )
         
-        self.IFhost = IFhost
-        self.IFport = IFport
-        self.IFDbname = IFDbname
+        self._IFhost = IFhost
+        self._IFport = IFport
+        self._IFDbname = IFDbname
         #create a client
-        self.client = InfluxDBClient(host=IFhost, port=IFport , database=IFDbname)
-        print("IFDbname -> {}".format(self.IFDbname))
+        self._client = InfluxDBClient(host=self._IFhost, port=self._IFport , database=self._IFDbname)
+        print("IFDbname -> {}".format(self._IFDbname))
         print(self.get_db_list())
         to_run_script= input("press y/Y if DB created -> ")
         if (to_run_script.lower() != 'y'):
             exit(-99)
         self.swtich_to_DB()
         #info logs
-        self.logger.log_info( f"Host , Port -> {self.IFhost} - {self.IFport} ")
-        self.logger.log_info( f"DB_source_Name -> {self.IFDbname} ")
+        self._logger.log_info( f"Host , Port -> {self._IFhost} - {self._IFport} ")
+        self._logger.log_info( f"DB_source_Name -> {self._IFDbname} ")
 
     def create_DB_by_name(self ):
-        self.client.create_database(self.IFDbname)
+        self._logger.log_info( f"create_DB_by_name -> {self._IFDbname} ")
+        self._client.create_database(self._IFDbname)
 
     def get_db_list(self):
-        return self.client.get_list_database()
+        self._logger.log_info( f"DB source list -> {self._client.get_list_database()} ")
+        return self._client.get_list_database()
 
     def swtich_to_DB(self):
-        self.client.switch_database(self.IFDbname)
+        self._client.switch_database(self._IFDbname)
+        self._logger.log_info( f"Switching to -> {self._IFDbname} ")
 
-    def write_point_to_db ( self , data_json , ERR_str = "", verbose_mode = True) -> bool:
-        if (verbose_mode):
-            print(data_json)
-            
-        is_data_wr = self.client.write_points(data_json)
+    def write_point_to_db ( self , data_json , ERR_str = "") -> bool:          
+        is_data_wr = self._client.write_points(data_json)
         if(not is_data_wr):
-            print("ERR -> data not written to DB" + ERR_str )
+            self._logger.log_info( f"ERR [DATA NOT WRITTEN] -> {self._IFDbname}")
         return is_data_wr
 
-    def write_list_to_db ( self , data_json_list ,batch_size , ERR_str = "", verbose_mode = True) -> bool:
-        if (verbose_mode):
-            print(data_json_list)
-        is_data_wr = self.client.write_points(points=data_json_list,batch_size=batch_size)
+    def write_list_to_db ( self , data_json_list ,batch_size , ERR_str = "") -> bool:
+        is_data_wr = self._client.write_points(points=data_json_list,batch_size=batch_size)
         if(not is_data_wr):
-            print("ERR -> data not written to DB" + ERR_str )
+            self._logger.log_info( f"ERR [DATA NOT WRITTEN] -> {self._IFDbname}")
         return is_data_wr
 
     def create_me_json (self, 

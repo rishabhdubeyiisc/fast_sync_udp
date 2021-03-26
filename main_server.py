@@ -127,7 +127,7 @@ def upload_func(pmu34_db    : db_client , th_Q : TH_Queue):
         #print("entry : {} ".format(entry))
         if entry != None :
             #print("entry : {} ".format(entry))
-            pmu34_db.write_point_to_db(data_json=entry,verbose_mode=False)
+            pmu34_db.write_point_to_db(data_json=entry)
         #import time
         #time.sleep(1.0)
 
