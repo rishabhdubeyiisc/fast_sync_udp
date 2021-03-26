@@ -97,37 +97,35 @@ def send_data_frame(pmu : Pmu_Client):
     pack_time_start = 0
     pack_time_end = 0
     packet_num = 0
-    try :
-        loop_send_time  = int(time()) + 10    
-        begin_send_time = int(time())
-        duration_in_sec = 60
-        while loop_send_time - begin_send_time > duration_in_sec :
-            #create payload
-            ct = time() + pmu.get_time_offset()
-            SOC = int(ct)
-            FRASEC = int (  (ct - SOC) * (10**6) )
-            # pack time calc
-            pack_time_start = time()
-            ieee_data_sample = DataFrame(   12345 , 
-                                    ("ok", True, "timestamp", False, False, False, 0, "<10", 0),
-                                    [(14635, 0), (-7318, -12676), (-7318, 12675), (1092, 0)], 
-                                    2500, 
-                                    0,
-                                    [100, 1000, 10000],
-                                    [0x3c12], 
-                                    ieee_cfg2_sample)
-            payload = ieee_data_sample.convert2bytes()
-            pack_time_end = time()
-            print(pack_time_end - pack_time_start)
-            #send to PDC
-            pmu.send_to_PDC(payload)
-            #recv from pdc
-            data_recv = pmu.recv_frm_PDC()
-            print ("Server says " + str (data_recv.decode('utf-8')))
-            packet_num = packet_num + 1
-            loop_send_time = int(time())
-    except KeyboardInterrupt :
-        print("Exited by user")
+    
+    loop_send_time  = int(time()) + 10    
+    begin_send_time = int(time())
+    duration_in_sec = 60
+    while loop_send_time - begin_send_time > duration_in_sec :
+        #create payload
+        ct = time() + pmu.get_time_offset()
+        SOC = int(ct)
+        FRASEC = int (  (ct - SOC) * (10**6) )
+        # pack time calc
+        pack_time_start = time()
+        ieee_data_sample = DataFrame(   12345 , 
+                                ("ok", True, "timestamp", False, False, False, 0, "<10", 0),
+                                [(14635, 0), (-7318, -12676), (-7318, 12675), (1092, 0)], 
+                                2500, 
+                                0,
+                                [100, 1000, 10000],
+                                [0x3c12], 
+                                ieee_cfg2_sample)
+        payload = ieee_data_sample.convert2bytes()
+        pack_time_end = time()
+        print(pack_time_end - pack_time_start)
+        #send to PDC
+        pmu.send_to_PDC(payload)
+        #recv from pdc
+        data_recv = pmu.recv_frm_PDC()
+        print ("Server says " + str (data_recv.decode('utf-8')))
+        packet_num = packet_num + 1
+        loop_send_time = int(time())
 if __name__ == "__main__":
     check_sudo()
 
