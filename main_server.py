@@ -228,7 +228,7 @@ def recv_common_frame(   th_Q        : TH_Queue              ,
 if __name__ == "__main__":
     IP_to_bind      = '10.64.37.35'
     port_opening    = 9991
-    pmu_IP          = '10.64.37.34'
+    pmu_IP          = '10.64.37.31'
     buffer_size     = 1024
     '''
     comm class
@@ -273,7 +273,7 @@ if __name__ == "__main__":
                     sync_logging_level     = 'DEBUG'     ,
 
                     ptp_server_sync    = True          ,
-                    ptp_sync_wait     = 1.0            ,
+                    ptp_sync_wait     = 0.5           ,
                     to_log_ptp_syncer   = True          ,
                     ptp_sync_logging_level = 'DEBUG'       
                  )

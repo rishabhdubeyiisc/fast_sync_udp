@@ -98,7 +98,10 @@ def send_data_frame(pmu : Pmu_Client):
     pack_time_end = 0
     packet_num = 0
     try :
-        while packet_num < MAX_16_BIT :
+        loop_send_time  = int(time()) + 10    
+        begin_send_time = int(time())
+        duration_in_sec = 60
+        while loop_send_time - begin_send_time > duration_in_sec :
             #create payload
             ct = time() + pmu.get_time_offset()
             SOC = int(ct)
@@ -121,7 +124,8 @@ def send_data_frame(pmu : Pmu_Client):
             #recv from pdc
             data_recv = pmu.recv_frm_PDC()
             print ("Server says " + str (data_recv.decode('utf-8')))
-            packet_num = packet_num + 1    
+            packet_num = packet_num + 1
+            loop_send_time = int(time())
     except KeyboardInterrupt :
         print("Exited by user")
 if __name__ == "__main__":
@@ -175,7 +179,7 @@ if __name__ == "__main__":
             ntp_sync_logging_level='DEBUG',
             
             ptp_server_sync=True ,
-            ptp_sync_wait=1.0, 
+            ptp_sync_wait=0.5, 
             to_log_ptp_syncer=True,
             ptp_sync_logging_level='DEBUG')
     #game
