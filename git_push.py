@@ -28,5 +28,8 @@ print("committing : {} ".format(commit_msg))
 commit_msg = "'"+ str(commit_msg) +"'" 
 
 run_cmd("git add .")
-run_cmd("git commit -m " + str(commit_msg) )
-run_cmd("git push")
+c1 = run_cmd("git commit -m " + str(commit_msg) )
+c2= run_cmd("git push")
+
+print(c1)
+print(c2)
