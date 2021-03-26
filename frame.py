@@ -178,7 +178,13 @@ class CommonFrame(metaclass=ABCMeta):
     FRAME_TYPES_WORDS = { code: word for word, code in FRAME_TYPES.items() }
 
 
-    def __init__(self, frame_type, pmu_id_code, soc=None, frasec=None, version=1):
+    def __init__(   self, 
+                    frame_type  : str = 'data', 
+                    pmu_id_code : int = 12345 , 
+                    soc         : int = 0     , 
+                    frasec      : int = 0     , 
+                    version     : int = 1
+                ):
         """
         CommonFrame abstract class
         :param string frame_type: Defines frame type
@@ -197,7 +203,7 @@ class CommonFrame(metaclass=ABCMeta):
             self.set_time(soc, frasec)
 
 
-    def set_frame_type(self, frame_type):
+    def set_frame_type(self, frame_type : str = 'data'):
         """
         ### set_frame_type() ###
 
@@ -258,7 +264,7 @@ class CommonFrame(metaclass=ABCMeta):
         return CommonFrame.FRAME_TYPES_WORDS[frame_type]
 
 
-    def set_version(self, version):
+    def set_version(self, version : int = 1):
         """
         ### set_version() ###
 
@@ -286,7 +292,7 @@ class CommonFrame(metaclass=ABCMeta):
         return self._version
 
 
-    def set_id_code(self, id_code):
+    def set_id_code(self, id_code : int = 12345 ):
         """
         ### set_id_code() ###
 

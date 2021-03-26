@@ -291,4 +291,3 @@ if __name__ == "__main__":
     
     #debug func
     recv_data_frame( th_Q = th_Q , pmu34_db = pmu34_db , pdc = PDC ,pmu_IP = pmu_IP,pmu_port = 12345)
-    del PDC
