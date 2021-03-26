@@ -98,9 +98,9 @@ def send_data_frame(pmu : Pmu_Client):
     pack_time_end = 0
     packet_num = 0
     
-    loop_send_time  = int(time()) + 10    
+    loop_send_time  = int(time()) + 1    
     begin_send_time = int(time())
-    duration_in_sec = 60 * 10
+    duration_in_sec = 10
     while loop_send_time - begin_send_time < duration_in_sec :
         #create payload
         ct = time() + pmu.get_time_offset()
@@ -168,18 +168,18 @@ if __name__ == "__main__":
             port_to_send=PDC_port_open,
             buffer=buffer,
             trans_logging_level='DEBUG',
-            to_log_trans=True,
+            to_log_trans=False,
             
             ntp_server = "10.64.37.35",
             ntp_server_sync=False,
             sync_lock_precision=(10**(-3)),
             ntp_sync_wait=30, 
-            to_log_ntp_syncer=True,
+            to_log_ntp_syncer=False,
             ntp_sync_logging_level='DEBUG',
             
             ptp_server_sync=True ,
             ptp_sync_wait=0.5, 
-            to_log_ptp_syncer=True,
+            to_log_ptp_syncer=False,
             ptp_sync_logging_level='DEBUG')
     #game
     send_data_frame(pmu_c1)

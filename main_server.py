@@ -3,6 +3,8 @@ import struct
 from time import time
 import threading
 import queue as Queue
+import multiprocessing
+from time import sleep as time_sleep
 
 from cl_inherited_comms import PDC_server
 from cl_utils import db_client_cls as db_client
@@ -115,12 +117,17 @@ def send_func(  pdc         : PDC_server            ,
 
 def upload_func(pmu34_db    : db_client , th_Q : TH_Queue):
     while True:
+        #print(th_Q.size())
+        if (th_Q.size() == 0):
+            time_sleep(0.1)
+
         #store over db
         entry = th_Q.remove_from_queue()
+        #print(f"entry {entry}")
         #print("entry : {} ".format(entry))
         if entry != None :
             #print("entry : {} ".format(entry))
-            pmu34_db.write_to_db(data_json=entry,verbose_mode=False)
+            pmu34_db.write_point_to_db(data_json=entry,verbose_mode=False)
         #import time
         #time.sleep(1.0)
 
@@ -145,25 +152,16 @@ def recv_data_frame(   th_Q        : TH_Queue              ,
         #print(frame)
         SOC_Client = frame.get_soc()
         FRASEC_Client = frame.get_frasec()[0]
-        print(SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_server - FRASEC_Client )
-        #store over db
-        '''
+        #print(SOC_server , SOC_Client , FRASEC_server , FRASEC_Client , FRASEC_server - FRASEC_Client )
+        #push to queue
+        FRASEC_diff = FRASEC_server - FRASEC_Client
         db_start_time = time()
         entry = pmu34_db.create_me_json(measurement='comm_delay',
                                 tag_name='pmu_34',tag_field='fracsec_diff',
                                 field_name='pdc_pmu_diff',field_value=FRASEC_diff)
-        pmu34_db.write_to_db(data_json=entry,verbose_mode=False)
+        th_Q.put_in_queue(entry)
         db_end_time = time()
-        '''
-        #push to queue
-        '''
-        db_start_time = time()
-        entry = pmu34_db.create_me_json(measurement='comm_delay',
-                    tag_name='pmu_34',tag_field='fracsec_diff',
-                    field_name='pdc_pmu_diff',field_value=FRASEC_diff)
-        th_Q.put_in_queue(item = entry)
-        db_end_time = time()
-        '''
+        #print(f"upload time -> {db_end_time - db_start_time}")
         #send
         sqn_num = sqn_num + 1
         msg = str(sqn_num)
@@ -260,22 +258,23 @@ if __name__ == "__main__":
                         sync_logging_level     = 'DEBUG'
                     )
     '''
-    PDC = PDC_server (    ip_server_is_binding = IP_to_bind , 
-                    port_opening         = port_opening       , 
-                    buffer_size          = buffer_size        ,
-                    trans_logging_level  = 'INFO'     ,
-                    to_log_trans      = True        ,
-                    ntp_server_sync         = True        , 
-                    set_deamon          = True        ,
-                    sync_lock_precision    = (10**(-4))  ,
-                    ntp_sync_wait        = 1.0         ,
-                    to_log_syncer         = True        ,
-                    sync_logging_level     = 'DEBUG'     ,
+    PDC = PDC_server (  ip_server_is_binding = IP_to_bind , 
+                        port_opening         = port_opening       , 
+                        buffer_size          = buffer_size        ,
+                        trans_logging_level  = 'INFO'               ,
+                        to_log_trans         = False        ,
+                        
+                        ntp_server_sync     = False        , 
+                        set_deamon          = True        ,
+                        sync_lock_precision = (10**(-4))  ,
+                        ntp_sync_wait       = 1.0         ,
+                        to_log_syncer       = False        ,
+                        sync_logging_level  = 'DEBUG'     ,
 
-                    ptp_server_sync    = True          ,
-                    ptp_sync_wait     = 0.5           ,
-                    to_log_ptp_syncer   = True          ,
-                    ptp_sync_logging_level = 'DEBUG'       
+                        ptp_server_sync     = True          ,
+                        ptp_sync_wait       = 0.5           ,
+                        to_log_ptp_syncer   = False          ,
+                        ptp_sync_logging_level = 'DEBUG'       
                  )
     #creating RT time series DB
     pmu34_db = db_client(IFDbname='PMU_34')
@@ -283,8 +282,10 @@ if __name__ == "__main__":
     th_Q = TH_Queue(BUF_SIZE=0 , to_log_queue=True)
     #TODO create analytics and main_thread
     analytic_TH = threading.Thread(target=upload_func , args=(pmu34_db , th_Q , ) )
-    analytic_TH.setDaemon(True)
-    #analytic_TH.start()
+    #analytic_TH.setDaemon(True)
+    analytic_TH.start()
+    #analytic_PR = multiprocessing.Process(target=upload_func ,args=(pmu34_db , th_Q , ))
+    #analytic_PR.start()
     #threaded main
     
     

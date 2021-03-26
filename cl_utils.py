@@ -84,6 +84,7 @@ class db_client_cls:
     def write_point_to_db ( self , data_json , ERR_str = "", verbose_mode = True) -> bool:
         if (verbose_mode):
             print(data_json)
+            
         is_data_wr = self.client.write_points(data_json)
         if(not is_data_wr):
             print("ERR -> data not written to DB" + ERR_str )
@@ -101,7 +102,7 @@ class db_client_cls:
                         measurement = 'comm_delay'  , 
                         tag_name    = 'pmu_34'      , tag_field = 'fracsec_diff' , 
                         field_name  = 'pdc_pmu_diff', field_value = 0):
-        time_stamp = datetime.datetime.now(pytz.ist)
+        time_stamp = datetime.datetime.now(pytz.utc)
         data_json = [
                         {
                             'measurement' : measurement ,
@@ -121,24 +122,28 @@ class Thread_safe_queue():
         import queue as Queue
         import logging
         from cl_utils import LogIt
-        self.logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='log_queue.log',to_log=to_log_queue)
-        self.q = Queue.Queue(BUF_SIZE)
-        self.to_log = to_log_queue
-        self.logger.log_info(__name__)
+        self._logger = LogIt(logger_name="queue",logging_level='DEBUG',filename='log_queue.log',to_log=to_log_queue)
+        self._q = Queue.Queue(BUF_SIZE)
+        self._to_log = to_log_queue
+        self._logger.log_info(__name__)
 
     def put_in_queue(self , item):
-        if not self.q.full():
-            self.q.put(item)
-            if self.to_log :
-                self.logger.log('Putting ' + str(item) + ' -> ' + str(self.q.qsize()) + ' items in queue')
+        if not self._q.full():
+            self._q.put(item)
+            if self._to_log :
+                self._logger.log(f"PUT item , queue_size -> {item} , {self._q.qsize()} " )
 
     def remove_from_queue(self):
         '''
             return item
         '''
         item = None
-        if not self.q.empty():
-            item = self.q.get()
-            if self.to_log :
-                self.logger.log('Getting ' + str(item)  + ' -> ' + str(self.q.qsize()) + ' items in queue')
+        if not self._q.empty():
+            item = self._q.get()
+            if self._to_log :
+                self._logger.log(f"GET item , queue_size -> {item} , {self._q.qsize()} " )
+
         return item
+    
+    def size(self):
+        return self._q.qsize()
