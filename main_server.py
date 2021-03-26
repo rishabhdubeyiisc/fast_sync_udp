@@ -136,7 +136,7 @@ def recv_data_frame(   th_Q        : TH_Queue              ,
         loop_start_time = time()
         data_recvd , addr_of_client = pdc.recv()
         #
-        server_ct = time()
+        server_ct = time() - pdc.get_time_offset()
         SOC_server = int(server_ct)
         FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 
@@ -171,7 +171,6 @@ def recv_data_frame(   th_Q        : TH_Queue              ,
         loop_end_time = time()
 
         #print( (loop_end_time-loop_start_time) , (db_end_time - db_start_time) , ((loop_end_time-loop_start_time) / (db_end_time - db_start_time)) )
-
 
 def recv_common_frame(   th_Q        : TH_Queue              ,
             pmu34_db    : db_client             , 
