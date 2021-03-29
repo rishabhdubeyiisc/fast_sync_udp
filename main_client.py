@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 from time import time
+from time import sleep as time_sleep
 
 from cl_inherited_comms import Pmu_Client
 from utils import check_sudo
@@ -7,6 +8,7 @@ from frame import DataFrame
 from frame import ConfigFrame2
 
 MAX_16_BIT = (2**16 - 1)
+ms_20 = 20 * ( 10 ** (-3) )
 
 data_rate=30
 
@@ -40,7 +42,7 @@ def send_data_frame(pmu : Pmu_Client):
     
     loop_send_time  = int(time()) + 1    
     begin_send_time = int(time())
-    duration_in_sec = 60 * 10
+    duration_in_sec = 60 
     while loop_send_time - begin_send_time < duration_in_sec :
         #create payload
         ct = time() + pmu.get_time_offset()
@@ -58,14 +60,15 @@ def send_data_frame(pmu : Pmu_Client):
                                 ieee_cfg2_sample)
         payload = ieee_data_sample.convert2bytes()
         pack_time_end = time()
-        print(pack_time_end - pack_time_start)
+        #print(pack_time_end - pack_time_start)
         #send to PDC
         pmu.send_to_PDC(payload)
         #recv from pdc
         data_recv = pmu.recv_frm_PDC()
-        print ("Server says " + str (data_recv.decode('utf-8')))
+        #print ("Server says " + str (data_recv.decode('utf-8')))
         packet_num = packet_num + 1
         loop_send_time = int(time())
+        time_sleep(ms_20)
 
 if __name__ == "__main__":
     check_sudo()
@@ -93,3 +96,5 @@ if __name__ == "__main__":
             ptp_sync_logging_level='DEBUG')
     #game
     send_data_frame(pmu_c1)
+
+    pmu_c1.send_to_PDC(0xDEAD)

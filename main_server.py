@@ -29,16 +29,19 @@ def upload_func(pmu34_db    : db_client , th_Q : TH_Queue):
         #print(th_Q.size())
         if (th_Q.size() == 0):
             time_sleep(0.1)
-
-        #store over db
-        entry = th_Q.remove_from_queue()
-        #print(f"entry {entry}")
-        #print("entry : {} ".format(entry))
-        if entry != None :
-            #print("entry : {} ".format(entry))
-            pmu34_db.write_point_to_db(data_json=entry)
-        #import time
-        #time.sleep(1.0)
+        else :
+            #size = th_Q.size()
+            #batch_size = int (size / 2)
+            #data_list = []
+            #for i in range (0 , batch_size):
+            entry = th_Q.remove_from_queue()
+                #data_list.append(entry)
+            #pmu34_db.write_list_to_db(data_json_list=data_list, batch_size=batch_size)
+            if entry != None :
+                #print("entry : {} ".format(entry))
+                pmu34_db.write_point_to_db(data_json=entry)
+            #import time
+            #time.sleep(1.0)
 
 def recv_data_frame(   th_Q        : TH_Queue              ,
             pmu34_db    : db_client             , 

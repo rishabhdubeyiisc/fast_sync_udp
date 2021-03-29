@@ -143,5 +143,5 @@ class Thread_safe_queue():
 
         return item
     
-    def size(self):
+    def size(self)-> int :
         return self._q.qsize()
