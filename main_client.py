@@ -68,7 +68,7 @@ def send_data_frame(pmu : Pmu_Client):
         #print ("Server says " + str (data_recv.decode('utf-8')))
         packet_num = packet_num + 1
         loop_send_time = int(time())
-        time_sleep(ms_20)
+        #time_sleep(ms_20)
 
 if __name__ == "__main__":
     check_sudo()
@@ -97,4 +97,4 @@ if __name__ == "__main__":
     #game
     send_data_frame(pmu_c1)
 
-    pmu_c1.send_to_PDC(0xDEAD.to_bytes(2,"big"))
+    #pmu_c1.send_to_PDC(0xDEAD.to_bytes(2,"big"))

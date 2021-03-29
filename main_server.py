@@ -79,7 +79,7 @@ def recv_data_frame(   th_Q        : TH_Queue              ,
         msg = str(sqn_num)
         pdc.send_to(pmu_IP=addr_of_client[0] , pmu_port=addr_of_client[1] , payload = msg.encode() )
         loop_end_time = time()
-
+        
         #print( (loop_end_time-loop_start_time) , (db_end_time - db_start_time) , ((loop_end_time-loop_start_time) / (db_end_time - db_start_time)) )
 
 if __name__ == "__main__":
