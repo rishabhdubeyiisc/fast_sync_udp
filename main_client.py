@@ -45,7 +45,7 @@ def send_data_frame(pmu : Pmu_Client):
     duration_in_sec = 60 
     while loop_send_time - begin_send_time < duration_in_sec :
         #create payload
-        ct = time() + pmu.get_time_offset()
+        ct = time() 
         SOC = int(ct)
         FRASEC = int (  (ct - SOC) * (10**6) )
         # pack time calc

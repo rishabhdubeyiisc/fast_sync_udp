@@ -54,8 +54,8 @@ def recv_data_frame(   th_Q        : TH_Queue              ,
         #recv
         loop_start_time = time()
         data_recvd , addr_of_client = pdc.recv()
-        #
-        server_ct = time() + pdc.get_time_offset()
+        #        
+        server_ct = time()
         SOC_server = int(server_ct)
         FRASEC_server = int (  (server_ct - SOC_server) * (10**6) )
 
@@ -91,8 +91,8 @@ if __name__ == "__main__":
     PDC = PDC_server (  ip_server_is_binding = IP_to_bind , 
                         port_opening         = port_opening       , 
                         buffer_size          = buffer_size        ,
-                        trans_logging_level  = 'INFO'               ,
-                        to_log_trans         = False        ,
+                        trans_logging_level  = 'DEBUG'               ,
+                        to_log_trans         = True        ,
                         
                         ntp_server_sync     = False        , 
                         set_deamon          = True        ,
