@@ -97,4 +97,4 @@ if __name__ == "__main__":
     #game
     send_data_frame(pmu_c1)
 
-    pmu_c1.send_to_PDC(0xDEAD)
+    pmu_c1.send_to_PDC(0xDEAD.to_bytes(2,"big"))
