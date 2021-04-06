@@ -63,24 +63,24 @@ class db_client_cls:
         #create a client
         self._client = InfluxDBClient(host=self._IFhost, port=self._IFport , database=self._IFDbname)
         print("IFDbname -> {}".format(self._IFDbname))
-        print(self.get_db_list())
+        print(self._get_db_list())
         to_run_script= input("press y/Y if DB created -> ")
         if (to_run_script.lower() != 'y'):
             exit(-99)
-        self.swtich_to_DB()
+        self._swtich_to_DB()
         #info logs
         self._logger.log_info( f"Host , Port -> {self._IFhost} - {self._IFport} ")
         self._logger.log_info( f"DB_source_Name -> {self._IFDbname} ")
 
-    def create_DB_by_name(self ):
+    def _create_DB_by_name(self ):
         self._logger.log_info( f"create_DB_by_name -> {self._IFDbname} ")
         self._client.create_database(self._IFDbname)
 
-    def get_db_list(self):
+    def _get_db_list(self):
         self._logger.log_info( f"DB source list -> {self._client.get_list_database()} ")
         return self._client.get_list_database()
 
-    def swtich_to_DB(self):
+    def _swtich_to_DB(self):
         self._client.switch_database(self._IFDbname)
         self._logger.log_info( f"Switching to -> {self._IFDbname} ")
 
