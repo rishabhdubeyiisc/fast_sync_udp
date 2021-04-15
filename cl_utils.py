@@ -38,7 +38,7 @@ class LogIt():
     
     def log_info (self ,msg : str):
         self.logger.info(msg)
-'''
+
 class db_client_cls:
     _counter = int(0)
     def __init__(   self, 
@@ -186,7 +186,7 @@ class db_client_cls:
                     ]
 
         return data_json
-
+'''
 
 class Thread_safe_queue():
     def __init__(self , BUF_SIZE = 0 , to_log_queue = True):
