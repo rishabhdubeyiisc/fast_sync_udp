@@ -22,6 +22,7 @@ is_sudo = make_sudo()
 run_cmd("chmod +x *.py")
 run_cmd("rm -r *.log")
 run_cmd("rm -rf '__pycache__'")
+run_cmd("chown rishabhd:rishabhd *.py")
 
 commit_msg = sys.argv[1]
 print("committing : {} ".format(commit_msg))
