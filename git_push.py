@@ -30,4 +30,4 @@ commit_msg = "'"+ str(commit_msg) +"'"
 
 print(run_cmd("git add ."))
 print(run_cmd("git commit -m " + str(commit_msg) ))
-print(c2)
+print(run_cmd("git push"))
