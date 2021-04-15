@@ -81,7 +81,7 @@ if __name__ == "__main__":
             port_to_send=PDC_port_open,
             buffer=buffer,
             trans_logging_level='DEBUG',
-            to_log_trans=False,
+            to_log_trans=True,
             
             ntp_server = "10.64.37.35",
             ntp_server_sync=False,
