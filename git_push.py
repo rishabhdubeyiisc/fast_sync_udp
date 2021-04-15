@@ -31,5 +31,6 @@ c0 = run_cmd("git add .")
 c1 = run_cmd("git commit -m " + str(commit_msg) )
 c2 = run_cmd("git push")
 
+print("cmd Status")
 print(f" {s0} \n {s1} \n {s2} \n {s3} ")
 print(f" {c0} \n {c1} \n {c2} ")
