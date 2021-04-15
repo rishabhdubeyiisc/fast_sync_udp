@@ -12,7 +12,7 @@ Data Transfer for Power Systems.
 * Header Frames.
 
 """
-
+#ri
 import collections
 from abc import ABCMeta, abstractmethod
 from struct import pack, unpack
