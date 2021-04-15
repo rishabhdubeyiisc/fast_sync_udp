@@ -286,7 +286,13 @@ class Pmu_Client( log_trans , ptp_syncer):
         #client
         self.cl_sock    = socket.socket( family = socket.AF_INET , 
                                          type = socket.SOCK_DGRAM)
-
+        self._ip_to_bind = get_my_ipv4()
+        self._port_to_bind = port_to_send
+        try:
+            self.cl_sock.bind(( self._ip_to_bind  , self._port_to_bind ))
+        except socket.error as err :
+            print(f"bind unsuccess at -> { self._ip_to_bind  } , { self._port_to_bind } ")
+            raise BaseException(f"bind unsuccess at -> { self._ip_to_bind  } , { self._port_to_bind } ")
         self.PDC_IP         = IP_to_send
         self.PDC_port       = port_to_send
         self.BUFFER_SIZE    = buffer
