@@ -50,7 +50,7 @@ def send_data_frame(pmu : Pmu_Client):
         FRASEC = int (  (ct - SOC) * (10**6) )
         # pack time calc
         pack_time_start = time()
-        ieee_data_sample = DataFrame(   12345 , 
+        ieee_data_sample = DataFrame(   1000 , 
                                 ("ok", True, "timestamp", False, False, False, 0, "<10", 0),
                                 [(14635, 0), (-7318, -12676), (-7318, 12675), (1092, 0)], 
                                 2500, 

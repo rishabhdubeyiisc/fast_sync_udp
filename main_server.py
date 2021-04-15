@@ -12,10 +12,10 @@ from frame import DataFrame
 
 
 pmu_id_ip_table = {
-  1000 : ( '10.64.37.31',9991 ),
-  2000 : ( '10.64.37.32',9991 ),
-  3000 : ( '10.64.37.33',9991 ),
-  4000 : ( '10.64.37.34',9991 ) 
+  1000 : '10.64.37.31',
+  2000 : '10.64.37.32',
+  3000 : '10.64.37.33',
+  4000 : '10.64.37.34' 
 }
 
 data_rate=30
@@ -55,7 +55,8 @@ def recv_data_frame(   th_Q        : TH_Queue              ,
             pmu34_db    : db_client             , 
             pdc         : PDC_server            , 
             pmu_IP      : str = '10.64.37.34'   , 
-            pmu_port    : int = 12345               
+            pmu_port    : int = 9991           ,
+            table       : dict= pmu_id_ip_table     
         ):
     sqn_num = int(0)
     while True:
@@ -85,7 +86,9 @@ def recv_data_frame(   th_Q        : TH_Queue              ,
         #send
         sqn_num = sqn_num + 1
         msg = str(sqn_num)
-        pdc.send_to(pmu_IP=pmu_IP , pmu_port= pmu_port, payload = msg.encode() )
+        pmu_id = frame.get_id_code()
+        pmu_ip_addr = table[pmu_id]
+        pdc.send_to(pmu_IP=pmu_ip_addr , pmu_port= 9991, payload = msg.encode() )
         #loop_end_time = time()
         
         #print( (loop_end_time-loop_start_time) , (db_end_time - db_start_time) , ((loop_end_time-loop_start_time) / (db_end_time - db_start_time)) )
@@ -97,7 +100,7 @@ if __name__ == "__main__":
     buffer_size     = 1024
 
     PDC = PDC_server (  ip_server_is_binding = IP_to_bind , 
-                        port_opening         = port_opening       , 
+                        port_opening         = port       , 
                         buffer_size          = buffer_size        ,
                         trans_logging_level  = 'DEBUG'               ,
                         to_log_trans         = True        ,
@@ -113,7 +116,7 @@ if __name__ == "__main__":
                         ptp_sync_wait       = 0.5           ,
                         to_log_ptp_syncer   = False          ,
                         ptp_sync_logging_level = 'DEBUG'       
-                 )
+                    )
     #creating RT time series DB
     pmu34_db = db_client(IFDbname='PMU_34')
     #TODO create thread safe queue
