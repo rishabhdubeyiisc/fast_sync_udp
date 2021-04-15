@@ -19,11 +19,11 @@ if (len(sys.argv) > 2):
 
 is_sudo = make_sudo()
 
-run_cmd("chmod +x *.py")
-run_cmd("rm -r *.log")
-run_cmd("rm -rf '__pycache__'")
-run_cmd("chown rishabhd:rishabhd *.py")
-
+s0 = run_cmd("chmod +x *.py")
+s1 = run_cmd("rm -r *.log")
+s2 = run_cmd("rm -rf '__pycache__'")
+s3 = run_cmd("chown rishabhd:rishabhd *.py")
+print(f" {s0} \n {s1} \n {s2} \n {s3} ")
 commit_msg = sys.argv[1]
 print("committing : {} ".format(commit_msg))
 commit_msg = "'"+ str(commit_msg) +"'" 
