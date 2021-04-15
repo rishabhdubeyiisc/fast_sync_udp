@@ -25,12 +25,9 @@ print(run_cmd("rm -rf '__pycache__'"))
 print(run_cmd("chown rishabhd:rishabhd *.py"))
 
 commit_msg = sys.argv[1]
-print("committing : {} ".format(commit_msg))
+print(f"committing : {commit_msg} ")
 commit_msg = "'"+ str(commit_msg) +"'" 
 
-c0 = run_cmd("git add .")
-print(c0)
-c1 = run_cmd("git commit -m " + str(commit_msg) )
-print(c1)
-c2 = run_cmd("git push")
+print(run_cmd("git add ."))
+print(run_cmd("git commit -m " + str(commit_msg) ))
 print(c2)
