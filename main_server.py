@@ -9,7 +9,7 @@ from cl_utils import Thread_safe_queue as TH_Queue
 
 from frame import ConfigFrame2
 from frame import DataFrame
-
+#c
 
 pmu_id_ip_table = {
   1000 : '10.64.37.31',
@@ -19,7 +19,7 @@ pmu_id_ip_table = {
 }
 
 data_rate=30
-ieee_cfg2_sample = ConfigFrame2(12345, 1000000, 1, "Station A", 7734, (False, False, True, False),
+ieee_cfg2_sample = ConfigFrame2(1000, 1000000, 1, "Station A", 7734, (False, False, True, False),
                                         4, 3, 1,
                                         ["VA", "VB", "VC", "I1", "ANALOG1", "ANALOG2", "ANALOG3",
                                         "BREAKER 1 STATUS", "BREAKER 2 STATUS", "BREAKER 3 STATUS",
