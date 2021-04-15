@@ -74,11 +74,11 @@ if __name__ == "__main__":
     check_sudo()
 
     IP_of_PDC       = '10.64.37.35'
-    PDC_port_open   = 9991
+    port            = 9991
     buffer          = 1024
 
     pmu_c1 = Pmu_Client( IP_to_send=IP_of_PDC,
-            port_to_send=PDC_port_open,
+            port_to_send=port,
             buffer=buffer,
             trans_logging_level='DEBUG',
             to_log_trans=True,

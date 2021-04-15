@@ -10,6 +10,14 @@ from cl_utils import Thread_safe_queue as TH_Queue
 from frame import ConfigFrame2
 from frame import DataFrame
 
+
+pmu_id_ip_table = {
+  1000 : ( '10.64.37.31',9991 ),
+  2000 : ( '10.64.37.32',9991 ),
+  3000 : ( '10.64.37.33',9991 ),
+  4000 : ( '10.64.37.34',9991 ) 
+}
+
 data_rate=30
 ieee_cfg2_sample = ConfigFrame2(12345, 1000000, 1, "Station A", 7734, (False, False, True, False),
                                         4, 3, 1,
@@ -84,7 +92,7 @@ def recv_data_frame(   th_Q        : TH_Queue              ,
 
 if __name__ == "__main__":
     IP_to_bind      = '10.64.37.35'
-    port_opening    = 9991
+    port            = 9991
     pmu_IP          = '10.64.37.31'
     buffer_size     = 1024
 
@@ -118,4 +126,4 @@ if __name__ == "__main__":
     
     
     #debug func
-    recv_data_frame( th_Q = th_Q , pmu34_db = pmu34_db , pdc = PDC ,pmu_IP = pmu_IP,pmu_port = 9991)
+    recv_data_frame( th_Q = th_Q , pmu34_db = pmu34_db , pdc = PDC ,pmu_IP = pmu_IP,pmu_port = port)
