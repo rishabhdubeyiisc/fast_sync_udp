@@ -19,8 +19,8 @@ if (len(sys.argv) > 2):
 
 is_sudo = make_sudo()
 
-run_cmd("chmod +x *.py")
-run_cmd("rm -r *.log")
+print(run_cmd("chmod +x *.py"))
+print(run_cmd("rm -r *.log"))
 run_cmd("rm -rf '__pycache__'")
 run_cmd("chown rishabhd:rishabhd *.py")
 
