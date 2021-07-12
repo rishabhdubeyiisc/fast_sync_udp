@@ -19,32 +19,6 @@ from struct import pack, unpack
 from time import time
 from math import sqrt, atan2
 
-__author__ = "Stevan Sandi"
-__copyright__ = "Copyright (c) 2016, Tomo Popovic, Stevan Sandi, Bozo Krstajic"
-__credits__ = []
-__license__ = "BSD-3"
-__version__ = "1.0.0-alpha"
-
-##############################################################################
-#
-#    Copyright (C) Gennady Trafimenkov, 2011
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Lesser General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
-
 # table for calculating CRC
 # this particular table was generated using pycrc v0.7.6, http://www.tty1.net/pycrc/
 # using the configuration:
@@ -113,15 +87,6 @@ def crc16xmodem(data, crc=0):
     Return calculated value of CRC
     """
     return _crc16(data, crc, CRC16_XMODEM_TABLE)
-
-
-################################################################################
-
-__author__ = "Stevan Sandi"
-__copyright__ = "Copyright (c) 2016, Tomo Popovic, Stevan Sandi, Bozo Krstajic"
-__credits__ = []
-__license__ = "BSD-3"
-__version__ = "1.0.0-alpha"
 
 
 def list2bytes(int_list, byte_size):
