@@ -1,7 +1,12 @@
 #! /usr/bin/env python3
+import sys
+import os
 from time import time
 import threading
 from time import sleep as time_sleep
+
+# Add common directory to path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 
 from cl_inherited_comms import PDC_server
 from cl_utils import db_client_cls as db_client

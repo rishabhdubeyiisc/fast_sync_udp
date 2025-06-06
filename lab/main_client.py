@@ -1,6 +1,11 @@
 #! /usr/bin/env python3
+import sys
+import os
 from time import time
 from time import sleep as time_sleep
+
+# Add common directory to path
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 
 from cl_inherited_comms import Pmu_Client
 from utils import check_sudo

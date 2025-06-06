@@ -13,7 +13,7 @@ Data Transfer for Power Systems.
 
 """
 #ri
-import collections
+import collections.abc as collections
 from abc import ABCMeta, abstractmethod
 from struct import pack, unpack
 from time import time
